@@ -1,0 +1,30 @@
+/* Header Container */
+.header-container {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(to bottom, rgba(163, 217, 165, 0.8), rgba(163, 217, 165, 0.4)),
+                url("https://pbs.twimg.com/media/F1b4y3IaMAAbKNG.jpg:large") center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding: 20px;
+  }
+  
+  /* Title */
+  .header-title {
+    font-size: 2.5rem;
+    font-family: "Fredoka One", sans-serif;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Caption */
+  .header-caption {
+    font-size: 1rem;
+    font-family: "Nunito", sans-serif;
+    margin-top: 10px;
+    opacity: 0.9;
+  }
+  
