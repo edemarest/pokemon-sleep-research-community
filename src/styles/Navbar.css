@@ -1,0 +1,65 @@
+/* Navbar Container */
+.navbar {
+    width: 100%;
+    background-color: #fdfbf6; /* Light white cream from Tailwind config */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Navigation Links */
+  .nav-links {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    font-family: "Quicksand", sans-serif;
+    font-size: 1rem;
+    color: #5d4037; /* Dark brown text */
+    font-weight: bold;
+    transition: 0.3s ease-in-out;
+  }
+  
+  .nav-link:hover {
+    color: #a3d9a5; /* Light pastel green hover effect */
+  }
+  
+  /* Auth Section */
+  .auth-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .auth-button {
+    background-color: #8ec5fc;
+    color: white;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .auth-button:hover {
+    opacity: 0.85;
+  }
+  
+  /* Profile Icon */
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #5d4037;
+    cursor: pointer;
+  }
+  

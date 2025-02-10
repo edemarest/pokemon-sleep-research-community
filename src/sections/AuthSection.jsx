@@ -1,25 +1,20 @@
 import React, { useState } from "react";
-import "../styles/AuthSection.css";
+import "../styles/Navbar.css"; // Reuse the styles for the Auth Section
 
 const AuthSection = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const userProfilePic = "https://via.placeholder.com/40"; // Placeholder profile image
 
   return (
-    <div className="auth-container">
-      <h2 className="text-2xl font-title mb-4">{isLogin ? "Login" : "Sign Up"}</h2>
-      <form className="auth-form">
-        <input type="text" placeholder="Email" className="auth-input" required />
-        <input type="password" placeholder="Password" className="auth-input" required />
-        {!isLogin && (
-          <input type="text" placeholder="Username" className="auth-input" required />
-        )}
-        <button type="submit" className="auth-button">
-          {isLogin ? "Login" : "Sign Up"}
-        </button>
-      </form>
-      <p className="switch-text" onClick={() => setIsLogin(!isLogin)}>
-        {isLogin ? "Don't have an account? Sign up" : "Already have an account? Login"}
-      </p>
+    <div className="auth-section">
+      {isLoggedIn ? (
+        <img src={userProfilePic} alt="Profile" className="profile-icon" />
+      ) : (
+        <>
+          <button className="auth-button" onClick={() => alert("Login Clicked")}>Login</button>
+          <button className="auth-button" onClick={() => alert("Signup Clicked")}>Sign Up</button>
+        </>
+      )}
     </div>
   );
 };
