@@ -1,65 +1,129 @@
 /* Navbar Container */
 .navbar {
-    width: 100%;
-    background-color: #fdfbf6; /* Light white cream from Tailwind config */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 32px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  background-color: theme("colors.card");
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+/* Auth Section */
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Profile & Logout Container */
+.auth-user {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Ensures side-by-side alignment */
+}
+
+/* Profile Icon */
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid theme("colors.textDark");
+  cursor: pointer;
+}
+
+/* Logout Button */
+.btn-logout {
+  background-color: theme("colors.accentBlue");
+  color: white;
+  font-weight: bold;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-logout:hover {
+  opacity: 0.85;
+}
+
+/* Dropdown Panel */
+.auth-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: theme("colors.card");
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 320px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+}
+
+/* Improve Form Spacing */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Adjust Input Fields */
+.form-input {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 2px solid theme("colors.accentGreen");
+  border-radius: 8px;
+  font-family: theme("fontFamily.body");
+  background: white;
+  font-size: 16px;
+  width: 100%;
+}
+
+/* Button Adjustments */
+.btn-primary {
+  background-color: theme("colors.accentBlue");
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+/* Dropdown Fade-in Animation */
+.auth-dropdown {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  /* Navigation Links */
-  .nav-links {
-    display: flex;
-    gap: 24px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .nav-link {
-    text-decoration: none;
-    font-family: "Quicksand", sans-serif;
-    font-size: 1rem;
-    color: #5d4037; /* Dark brown text */
-    font-weight: bold;
-    transition: 0.3s ease-in-out;
-  }
-  
-  .nav-link:hover {
-    color: #a3d9a5; /* Light pastel green hover effect */
-  }
-  
-  /* Auth Section */
-  .auth-section {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  
-  .auth-button {
-    background-color: #8ec5fc;
-    color: white;
-    font-weight: bold;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .auth-button:hover {
-    opacity: 0.85;
-  }
-  
-  /* Profile Icon */
-  .profile-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #5d4037;
-    cursor: pointer;
-  }
-  
+}

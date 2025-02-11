@@ -1,0 +1,94 @@
+/* Global Styles */
+body {
+    font-family: theme("fontFamily.body");
+    background-color: theme("colors.background");
+    color: theme("colors.textDark");
+    margin: 0;
+    padding: 0;
+}
+
+/* Headings */
+.text-title {
+    font-family: theme("fontFamily.title");
+    font-size: 2rem;
+    font-weight: bold;
+    color: theme("colors.textDark");
+}
+
+/* Subtitle */
+.text-subtitle {
+    font-family: theme("fontFamily.body");
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: theme("colors.textDark");
+}
+
+/* Regular Text */
+.text-body {
+    font-family: theme("fontFamily.body");
+    font-size: 1rem;
+    color: theme("colors.textDark");
+}
+
+/* Small Text */
+.text-small {
+    font-family: theme("fontFamily.body");
+    font-size: 0.875rem;
+    color: theme("colors.textDark");
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: theme("colors.accentBlue");
+    color: white;
+    font-weight: bold;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    opacity: 0.85;
+}
+
+/* Form Labels */
+.form-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: theme("colors.textDark");
+    margin-bottom: 0px;
+}
+
+/* Input Fields */
+.form-input {
+    padding: 12px;
+    border: 2px solid theme("colors.accentGreen");
+    border-radius: 8px;
+    font-family: theme("fontFamily.body");
+    background: white;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* Switch Text */
+.switch-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: theme("colors.textDark");
+    cursor: pointer;
+    text-align: center;
+}
+
+.switch-text:hover {
+    text-decoration: underline;
+}
+
+.nav-link {
+    @apply text-body font-bold transition ease-in-out;
+}
+
+.nav-link:hover {
+    @apply text-accentGreen;
+}
