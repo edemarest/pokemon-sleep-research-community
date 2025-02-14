@@ -9,7 +9,9 @@ const Header = () => {
       <header className="header-container">
         <div className="header-content">
           <h1 className="header-title">Pokémon Sleep Research Community</h1>
-          <p className="header-caption">Sharing discoveries, tracking sleep, and building friendships</p>
+          <p className="header-caption">
+            Sharing discoveries, tracking sleep, and building friendships
+          </p>
         </div>
       </header>
     </div>

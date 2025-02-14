@@ -1,49 +1,159 @@
-/* Auth Section */
-.auth-container {
-    background-color: #fdfbf6; /* Cream-colored card */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
+/* 🔹 Auth Section */
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 🔹 Profile & Logout Container */
+.auth-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 🔹 Profile Icon */
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid theme("colors.textDark");
+  cursor: pointer;
+}
+
+/* 🔹 Logout Button */
+.btn-logout {
+  background-color: theme("colors.accentBlue");
+  color: white;
+  font-weight: bold;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-logout:hover {
+  opacity: 0.85;
+}
+
+/* 🔹 Auth Dropdown Container */
+.auth-dropdown-container {
+  position: relative;
+}
+
+/* 🔹 Dropdown Panel */
+.auth-dropdown {
+  position: absolute;
+  top: 60px; /* Pushes dropdown below navbar */
+  right: -25px; /* Adds slight spacing from right */
+  background: theme("colors.card");
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 360px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+}
+
+/* 🔹 Improve Form Spacing */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 🔹 Input Fields */
+.form-input {
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 2px solid theme("colors.accentGreen");
+  border-radius: 8px;
+  font-family: theme("fontFamily.body");
+  background: white;
+  font-size: 16px;
+  width: 100%;
+}
+
+/* 🔹 Primary Button (Enabled) */
+.btn-primary {
+  background-color: theme("colors.accentBlue");
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+/* 🔹 Disabled Button */
+.btn-disabled {
+  background-color: #c4c4c4; /* Greyed out */
+  color: #888;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: not-allowed;
+  transition: 0.3s;
+}
+
+/* 🔹 Friend Code Visibility Dropdown Container */
+.select-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* 🔹 Custom Dropdown */
+.select-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid theme("colors.accentGreen");
+  border-radius: 8px;
+  background-color: white;
+  font-family: theme("fontFamily.body");
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none; /* Removes default styles */
+  -webkit-appearance: none; /* Safari fix */
+  -moz-appearance: none; /* Firefox fix */
+  padding-right: 40px; /* Space for custom arrow */
+}
+
+/* 🔹 Dropdown Arrow as Background Image */
+.select-container::after {
+  content: "▼"; /* Unicode arrow symbol */
+  font-size: 14px;
+  color: theme("colors.textDark");
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Prevents interaction */
+}
+
+/* 🔹 Dropdown Fade-in Animation */
+.auth-dropdown {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  .auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .auth-input {
-    padding: 10px;
-    border: 1px solid #a3d9a5;
-    border-radius: 8px;
-    font-family: "Quicksand", "Nunito", sans-serif;
-  }
-  
-  .auth-button {
-    background-color: #8ec5fc;
-    color: white;
-    font-weight: bold;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  
-  .auth-button:hover {
-    opacity: 0.85;
-    transform: scale(1.05);
-  }
-  
-  .switch-text {
-    color: #5d4037;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .switch-text:hover {
-    text-decoration: underline;
-  }
-  
+}

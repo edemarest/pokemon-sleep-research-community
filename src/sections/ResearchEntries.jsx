@@ -22,7 +22,11 @@ const ResearchEntries = () => {
         {entries.map((entry) => (
           <div key={entry.id} className="entry-card">
             {entry.image && (
-              <img src={entry.image} alt="Research entry" className="entry-image" />
+              <img
+                src={entry.image}
+                alt="Research entry"
+                className="entry-image"
+              />
             )}
             <p className="font-body">{entry.text}</p>
           </div>

@@ -1,22 +1,21 @@
 /* Page Background */
 .bg-background {
-    background-color: #fdfbf6; /* Soft white cream */
-  }
-  
-  /* Main Content */
-  main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding: 40px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  /* Footer */
-  footer {
-    padding: 20px;
-    text-align: center;
-    border-top: 2px solid #5d4037;
-  }
-  
+  background-color: #fdfbf6; /* Soft white cream */
+}
+
+/* Main Content */
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Footer */
+footer {
+  padding: 20px;
+  text-align: center;
+  border-top: 2px solid #5d4037;
+}

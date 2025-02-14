@@ -1,34 +1,33 @@
 /* Friend Finder Section */
 .friend-finder {
-    background-color: #fdfbf6; /* Cream-colored card */
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Friend List */
-  .friend-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  /* Friend Cards */
-  .friend-card {
-    background-color: #fff;
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #a3d9a5; /* Pastel green border */
-  }
-  
-  /* Friend Code Text */
-  .friend-code {
-    font-family: "Quicksand", "Nunito", sans-serif;
-    color: #5d4037; /* Dark brown text */
-    font-weight: bold;
-  }
-  
+  background-color: #fdfbf6; /* Cream-colored card */
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Friend List */
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Friend Cards */
+.friend-card {
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #a3d9a5; /* Pastel green border */
+}
+
+/* Friend Code Text */
+.friend-code {
+  font-family: "Quicksand", "Nunito", sans-serif;
+  color: #5d4037; /* Dark brown text */
+  font-weight: bold;
+}
