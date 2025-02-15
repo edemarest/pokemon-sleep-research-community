@@ -60,25 +60,6 @@
   z-index: 100;
 }
 
-/* 🔹 Improve Form Spacing */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* 🔹 Input Fields */
-.form-input {
-  margin-bottom: 10px;
-  padding: 12px;
-  border: 2px solid theme("colors.accentGreen");
-  border-radius: 8px;
-  font-family: theme("fontFamily.body");
-  background: white;
-  font-size: 16px;
-  width: 100%;
-}
-
 /* 🔹 Primary Button (Enabled) */
 .btn-primary {
   background-color: theme("colors.accentBlue");

@@ -9,6 +9,7 @@ module.exports = {
         accentBlue: "#8EC5FC", // Soft pastel blue
         accentYellow: "#F8D49D", // Warm Pokémon yellow
         textDark: "#5D4037", // Dark brown for text (Readable, Ink-like)
+        pastelPink: "#d48ac2",
       },
       fontFamily: {
         title: ["Fredoka One", "Baloo Paaji 2", "sans-serif"], // Playful & Pokémon-like

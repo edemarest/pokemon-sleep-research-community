@@ -3,10 +3,10 @@ import { useAuth } from "../../context/AuthContext";
 import {
   createUserProfile,
   checkUserExists,
-} from "../../firebase/firebaseService";
+} from "../../firebase/FirebaseService";
 import "../../styles/AuthSection.css";
 
-const SignupForm = ({ setIsSignup }) => {
+const SignUpForm = ({ setIsSignup }) => {
   const { register } = useAuth();
   const [signupStep, setSignupStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -150,7 +150,7 @@ const SignupForm = ({ setIsSignup }) => {
 
             <label className="form-label">Friend Code Visibility</label>
             <select
-              className="select-input"
+              className="select-input mb-4"
               value={friendCodeVisibility}
               onChange={(e) => setFriendCodeVisibility(e.target.value)}
             >
@@ -161,13 +161,24 @@ const SignupForm = ({ setIsSignup }) => {
               <option value="hidden">Do not display</option>
             </select>
 
-            <button
-              type="submit"
-              className={isStep2Valid ? "btn-primary" : "btn-disabled"}
-              disabled={!isStep2Valid || loading}
-            >
-              {loading ? "Processing..." : "Create Account"}
-            </button>
+            <div className="button-group">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setSignupStep(1)}
+                disabled={loading}
+                style={{ marginRight: "10px" }}
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                className={isStep2Valid ? "btn-primary" : "btn-disabled"}
+                disabled={!isStep2Valid || loading}
+              >
+                {loading ? "Processing..." : "Create Account"}
+              </button>
+            </div>
 
             {/* 🔹 "Already have an account?" Switch to Login */}
             <p className="switch-text mt-3" onClick={() => setIsSignup(false)}>
@@ -181,4 +192,4 @@ const SignupForm = ({ setIsSignup }) => {
   );
 };
 
-export default SignupForm;
+export default SignUpForm;

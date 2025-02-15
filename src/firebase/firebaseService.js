@@ -219,3 +219,30 @@ export const deleteProfilePicture = async (uid) => {
     console.error("🔥 Error deleting profile picture:", error);
   }
 };
+
+/** 🔹 Fetch Public Trainer Codes */
+export const getPublicTrainerCodes = async (user) => {
+  try {
+    let trainerQuery;
+
+    if (user) {
+      // If logged in, fetch trainers with "registered" or "everyone" visibility
+      trainerQuery = query(
+        collection(db, "users"),
+        where("friendCodeVisibility", "in", ["registered", "everyone"]),
+      );
+    } else {
+      // If NOT logged in, only fetch trainers with "everyone" visibility
+      trainerQuery = query(
+        collection(db, "users"),
+        where("friendCodeVisibility", "==", "everyone"),
+      );
+    }
+
+    const trainerSnapshot = await getDocs(trainerQuery);
+    return trainerSnapshot.docs.map((doc) => doc.data());
+  } catch (error) {
+    console.error("🔥 Error fetching public trainer codes:", error);
+    return [];
+  }
+};

@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/AuthSection.css";
 import LoginForm from "./LoginForm";
-import SignupForm from "./SignupForm";
+import SignUpForm from "./SignUpForm";
 import ProfileDropdown from "./ProfileDropdown";
-import { getUserProfile } from "../../firebase/firebaseService";
+import { getUserProfile } from "../../firebase/FirebaseService";
 
 const DEFAULT_PFP = "/images/default-avatar.png";
 
@@ -51,7 +51,7 @@ const AuthSection = () => {
             onError={(e) => (e.target.src = DEFAULT_PFP)}
           />
           {showDropdown && <ProfileDropdown setProfilePic={setProfilePic} />}
-          <button className="btn-logout" onClick={logout}>
+          <button className="btn-logout ml-2" onClick={logout}>
             Logout
           </button>
         </div>
@@ -67,7 +67,7 @@ const AuthSection = () => {
           {showDropdown && (
             <>
               {isSignup ? (
-                <SignupForm setIsSignup={setIsSignup} />
+                <SignUpForm setIsSignup={setIsSignup} />
               ) : (
                 <LoginForm setIsSignup={setIsSignup} />
               )}

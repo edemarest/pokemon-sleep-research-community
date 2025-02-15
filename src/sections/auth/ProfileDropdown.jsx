@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
   uploadProfilePicture,
-  deleteProfilePicture,
   checkUserExists,
-} from "../../firebase/firebaseService";
-import { FaEdit, FaTrash, FaCheck, FaUpload } from "react-icons/fa";
+} from "../../firebase/FirebaseService";
+import "../../styles/global.css";
+import { FaEdit, FaTrash, FaCheck, FaUpload, FaRedo } from "react-icons/fa";
 
 const ProfileDropdown = ({ setProfilePic }) => {
   const { user, logout } = useAuth();
@@ -19,10 +19,12 @@ const ProfileDropdown = ({ setProfilePic }) => {
   const [friendCode, setFriendCode] = useState("");
   const [friendCodeVisibility, setFriendCodeVisibility] =
     useState("registered");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+
+  const dropdownRef = useRef(null);
 
   // Default profile picture URL
-  const defaultProfilePic =
-    "/images/default-avatar.png"; // Update with your default image path
+  const defaultProfilePic = "/images/default-avatar.png"; // Update with your default image path
 
   const [profilePic, setProfilePicState] = useState(defaultProfilePic);
   const [tempProfilePic, setTempProfilePic] = useState(null); // Temporary picture for preview only
@@ -157,106 +159,148 @@ const ProfileDropdown = ({ setProfilePic }) => {
     }
   };
 
+  // 🔹 Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   return (
-    <div className="absolute top-16 right-0 bg-card p-5 rounded-lg shadow-lg max-w-xs w-80 flex flex-col gap-3 z-50">
-      {loading ? (
-        <p className="text-body">Loading profile...</p>
-      ) : profile ? (
-        <div className="text-center">
-          {/* 🔹 Profile Picture */}
-          <div className="flex justify-center">
-            <img
-              src={tempProfilePic || profilePic} // Use temp preview if exists
-              alt="Profile"
-              className="w-20 h-20 rounded-full border-2 border-textDark"
-              onError={(e) => (e.target.src = "/images/default-avatar.png")}
-            />
-          </div>
-
-          {/* 🔹 Upload New Profile Picture */}
-          {isEditing && (
-            <div className="flex flex-col items-center gap-2 mt-3">
-              <label className="btn-primary flex items-center justify-center cursor-pointer">
-                <FaUpload className="mr-2" /> Upload Picture
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
-              <button
-                className="text-textDark underline flex items-center justify-center"
-                onClick={handleResetProfilePicture}
-              >
-                <FaTrash className="mr-2" /> Reset to Default
-              </button>
+    isDropdownOpen && (
+      <div
+        ref={dropdownRef}
+        className="absolute top-16 right-0 bg-card p-5 rounded-lg shadow-lg max-w-xs w-80 flex flex-col gap-3 z-50"
+      >
+        {loading ? (
+          <p className="text-body">Loading profile...</p>
+        ) : profile ? (
+          <div className="text-center">
+            {/* 🔹 Profile Picture */}
+            <div className="flex justify-center">
+              <img
+                src={tempProfilePic || profilePic} // Use temp preview if exists
+                alt="Profile"
+                className="w-20 h-20 rounded-full border-2 border-textDark"
+                onError={(e) => (e.target.src = "/images/default-avatar.png")}
+              />
             </div>
-          )}
 
-          {/* 🔹 Profile Details */}
-          <div className="mt-4 space-y-3">
-            <label className="form-label">Trainer Name</label>
-            {isEditing ? (
-              <input
-                type="text"
-                className="form-input"
-                value={trainerName}
-                onChange={(e) => setTrainerName(e.target.value)}
-              />
-            ) : (
-              <p className="text-body">{profile?.trainerName || "N/A"}</p>
-            )}
-
-            <label className="form-label">Friend Code</label>
-            {isEditing ? (
-              <input
-                type="text"
-                className="form-input"
-                value={friendCode}
-                onChange={(e) => formatFriendCode(e.target.value)}
-              />
-            ) : (
-              <p className="text-body">{profile?.friendCode || "N/A"}</p>
-            )}
-
-            <label className="form-label">Registered Email</label>
-            <p className="text-body">{profile?.email || "N/A"}</p>
-          </div>
-
-          {/* 🔹 Buttons */}
-          <div className="flex flex-col items-center gap-2 mt-5">
-            {isEditing ? (
-              <>
+            {/* 🔹 Upload New Profile Picture */}
+            {isEditing && (
+              <div className="flex flex-col items-center gap-2 mt-3">
+                <label className="btn-primary flex items-center justify-center cursor-pointer">
+                  <FaUpload className="mr-2" /> Upload Picture
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
                 <button
-                  className="btn-primary flex items-center justify-center w-full"
-                  onClick={handleUpdate}
-                  disabled={loading}
+                  className="text-textDark underline flex items-center justify-center"
+                  onClick={handleResetProfilePicture}
                 >
-                  <FaCheck className="mr-2" />{" "}
-                  {loading ? "Saving..." : "Update Profile"}
+                  <FaRedo className="mr-2" /> Reset to Default
                 </button>
-                <button
-                  className="text-textDark underline flex items-center justify-center w-full"
-                  onClick={handleDeleteProfile}
-                >
-                  <FaTrash className="mr-2" /> Delete Account
-                </button>
-              </>
-            ) : (
-              <button
-                className="btn-primary flex items-center justify-center w-full"
-                onClick={() => setIsEditing(true)}
-              >
-                <FaEdit className="mr-2" /> Edit Profile
-              </button>
+              </div>
             )}
+
+            {/* 🔹 Profile Details */}
+            <div className="mt-4">
+              <label className="form-label">Trainer Name</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  className="form-input"
+                  value={trainerName}
+                  onChange={(e) => setTrainerName(e.target.value)}
+                />
+              ) : (
+                <p className="text-body">{profile?.trainerName || "N/A"}</p>
+              )}
+
+              <label className="form-label">Friend Code</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  className="form-input"
+                  value={friendCode}
+                  onChange={(e) => formatFriendCode(e.target.value)}
+                />
+              ) : (
+                <p className="text-body">{profile?.friendCode || "N/A"}</p>
+              )}
+              <label className="form-label">Friend Code Visibility</label>
+              {isEditing ? (
+                <select
+                  className="select-input mb-2"
+                  value={friendCodeVisibility}
+                  onChange={(e) => setFriendCodeVisibility(e.target.value)}
+                >
+                  <option value="registered">
+                    Display only to registered users
+                  </option>
+                  <option value="everyone">Display to everyone</option>
+                  <option value="hidden">Do not display</option>
+                </select>
+              ) : (
+                <p className="text-body">
+                  {profile?.friendCodeVisibility === "registered"
+                    ? "Only registered users"
+                    : profile?.friendCodeVisibility === "everyone"
+                      ? "Everyone"
+                      : "Hidden"}
+                </p>
+              )}
+              <label className="form-label">Registered Email</label>
+              <p className="text-body">{profile?.email || "N/A"}</p>
+            </div>
+
+            {/* 🔹 Buttons */}
+            <div className="flex flex-col items-center gap-2 mt-1">
+              {isEditing ? (
+                <>
+                  <button
+                    className="btn-primary flex items-center justify-center w-full"
+                    onClick={handleUpdate}
+                    disabled={loading}
+                  >
+                    <FaCheck className="mr-2" />{" "}
+                    {loading ? "Saving..." : "Update Profile"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="btn-primary flex items-center justify-center w-full"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <FaEdit className="mr-2" /> Edit Profile
+                  </button>
+                  <button
+                    className="text-textDark underline flex items-center justify-center w-full"
+                    onClick={handleDeleteProfile}
+                  >
+                    <FaTrash className="mr-2" /> Delete Account
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <p className="text-body">No profile data found.</p>
-      )}
-    </div>
+        ) : (
+          <p className="text-body">No profile data found.</p>
+        )}
+      </div>
+    )
   );
 };
 

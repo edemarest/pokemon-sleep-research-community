@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/AuthSection.css";
+import "../../styles/global.css";
 
 const LoginForm = ({ setIsSignup }) => {
   const { login } = useAuth();
