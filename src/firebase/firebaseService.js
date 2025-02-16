@@ -7,8 +7,12 @@ import {
   query,
   where,
   getDocs,
+  addDoc,
   updateDoc,
   deleteDoc,
+  arrayUnion,
+  arrayRemove,
+  orderBy
 } from "firebase/firestore";
 import { getAuth, deleteUser } from "firebase/auth"; // ✅ Correct Firebase Auth imports
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
@@ -18,7 +22,7 @@ import {
   uploadBytes,
   getDownloadURL,
   deleteObject,
-  getMetadata,
+  getMetadata
 } from "firebase/storage";
 
 const storage = getStorage();
@@ -246,3 +250,149 @@ export const getPublicTrainerCodes = async (user) => {
     return [];
   }
 };
+
+export const getEntries = async (limit) => {
+  try {
+    const entriesRef = collection(db, "entries");
+    const q = query(entriesRef, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    
+    let entries = [];
+    querySnapshot.forEach((doc) => {
+      entries.push({ id: doc.id, ...doc.data() });
+    });
+
+    return entries.slice(0, limit);
+  } catch (error) {
+    console.error("🔥 Error fetching entries:", error);
+    return [];
+  }
+};
+
+export const getAllEntries = async (filterTag = null) => {
+  try {
+    const entriesRef = collection(db, "entries");
+    let q = query(entriesRef, orderBy("createdAt", "desc"));
+
+    if (filterTag) {
+      q = query(entriesRef, where("tags", "array-contains", filterTag));
+    }
+
+    const querySnapshot = await getDocs(q);
+    let entries = [];
+    querySnapshot.forEach((doc) => {
+      entries.push({ id: doc.id, ...doc.data() });
+    });
+
+    return entries;
+  } catch (error) {
+    console.error("🔥 Error fetching entries:", error);
+    return [];
+  }
+};
+
+export const saveEntry = async (userId, trainerName, text, imageUrl, tags) => {
+  try {
+    const entryData = {
+      authorId: userId,
+      trainerName: trainerName,
+      text: text,
+      imageUrl: imageUrl || null, // Optional
+      tags: tags.length ? tags : ["General"], // Default to "General"
+      likes: [], // Empty like list
+      createdAt: new Date(),
+    };
+
+    const docRef = await addDoc(collection(db, "entries"), entryData);
+    console.log("✅ Entry successfully created:", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("🔥 Error saving entry:", error);
+    return null;
+  }
+};
+
+export const uploadEntryImage = async (userId, file) => {
+  try {
+    if (!file) throw new Error("Invalid file.");
+
+    console.log("📸 Uploading image for user:", userId);
+    
+    const storageRef = ref(getStorage(), `entryImages/${userId}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    console.log("✅ Image uploaded successfully! URL:", downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error("🔥 Error uploading entry image:", error);
+    return null;
+  }
+};
+
+export const toggleLike = async (entryId, userId) => {
+  try {
+    const entryRef = doc(db, "entries", entryId);
+    const entrySnapshot = await getDoc(entryRef);
+
+    if (!entrySnapshot.exists()) {
+      console.error("⚠️ Entry does not exist.");
+      return false;
+    }
+
+    const entryData = entrySnapshot.data();
+    const isLiked = entryData.likes.includes(userId);
+
+    await updateDoc(entryRef, {
+      likes: isLiked
+        ? arrayRemove(userId) // Remove like
+        : arrayUnion(userId), // Add like
+    });
+
+    console.log(isLiked ? "👍 Like removed" : "❤️ Like added");
+    return true;
+  } catch (error) {
+    console.error("🔥 Error toggling like:", error);
+    return false;
+  }
+};
+
+export const getComments = async (entryId) => {
+  try {
+    const commentsRef = collection(db, `entries/${entryId}/comments`);
+    const q = query(commentsRef, orderBy("createdAt", "asc"));
+    const querySnapshot = await getDocs(q);
+
+    let comments = [];
+    querySnapshot.forEach((doc) => {
+      comments.push({ id: doc.id, ...doc.data() });
+    });
+
+    return comments;
+  } catch (error) {
+    console.error("🔥 Error fetching comments:", error);
+    return [];
+  }
+};
+
+export const addComment = async (entryId, userId, trainerName, text) => {
+  try {
+    const commentData = {
+      authorId: userId,
+      trainerName: trainerName,
+      text: text,
+      createdAt: new Date(),
+    };
+
+    const docRef = await addDoc(
+      collection(db, `entries/${entryId}/comments`),
+      commentData
+    );
+    console.log("✅ Comment successfully added:", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("🔥 Error adding comment:", error);
+    return null;
+  }
+};
+

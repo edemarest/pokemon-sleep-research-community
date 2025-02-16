@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/Navbar.css";
 import AuthSection from "./auth/AuthSection"; // Import the AuthSection component
 
@@ -7,12 +8,12 @@ const Navbar = () => {
     <nav className="navbar">
       {/* Left Side - Logo or Title */}
       <div className="nav-links">
-        <a href="/" className="nav-link">
+        <Link to="/" className="nav-link">
           Home
-        </a>
-        <a href="/entries" className="nav-link">
+        </Link>
+        <Link to="/entries" className="nav-link">
           Research Log
-        </a>
+        </Link>
       </div>
 
       {/* Right Side - Auth Section */}
