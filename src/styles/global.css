@@ -78,6 +78,19 @@ body {
   padding-bottom: 10px;
 }
 
+
+/* 🔹 Disabled Button */
+.btn-disabled {
+  background-color: #c4c4c4; /* Greyed out */
+  color: #888;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: not-allowed;
+  transition: 0.3s;
+}
+
 /* Input Fields */
 .form-input {
   padding: 12px;

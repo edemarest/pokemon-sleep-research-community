@@ -256,10 +256,12 @@ export const getEntries = async (limit) => {
     const entriesRef = collection(db, "entries");
     const q = query(entriesRef, orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
-    
+
     let entries = [];
     querySnapshot.forEach((doc) => {
-      entries.push({ id: doc.id, ...doc.data() });
+      const entryData = doc.data();
+      console.log("🔥 Fetched Entry Data:", entryData); // ✅ Debugging output
+      entries.push({ id: doc.id, ...entryData });
     });
 
     return entries.slice(0, limit);
