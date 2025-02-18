@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.research-entries {
+  @apply w-full max-w-5xl p-6 bg-card rounded-lg;
+}
+
+.research-entries .entries-container {
+  @apply rounded-md mt-4 p-2 overflow-y-auto shadow-inner bg-[#ede8da];
+}
+
+/* ✅ Green Scrollbar */
+.research-entries .entries-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.research-entries .entries-container::-webkit-scrollbar-thumb {
+  background-color: #8fcc91;
+  border-radius: 4px;
+}
+
+.research-entries .entries-container::-webkit-scrollbar-track {
+  background-color: #e3dccb;
+}
+
+.research-entries .entries-container {
+  scrollbar-color: #8fcc91 #e3dccb;
+  scrollbar-width: thin;
+}

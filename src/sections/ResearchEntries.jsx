@@ -1,83 +1,113 @@
 import React, { useEffect, useState } from "react";
-import { getEntries, getUserProfile } from "../firebase/FirebaseService"; // ✅ Import getUserProfile
+import { getEntries, getUserProfile } from "../firebase/FirebaseService";
 import Entry from "../sections/Entry";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaPencilAlt } from "react-icons/fa";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import "../styles/ResearchEntries.css";
 
 const ResearchEntries = () => {
   const [entries, setEntries] = useState([]);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEntriesWithProfiles = async () => {
-      const fetchedEntries = await getEntries(3);
+      const fetchedEntries = await getEntries(6); // ✅ Fetch top 6 entries
 
-      // ✅ Debug: Check Firestore response
       console.log("📜 Firestore Fetched Entries:", fetchedEntries);
 
       const entriesWithProfilePics = await Promise.all(
         fetchedEntries.map(async (entry) => {
           const userProfile = await getUserProfile(entry.authorId);
-
-          // ✅ Debug: Ensure trainerName is correctly fetched
           console.log(
-            `🔍 Entry ID: ${entry.id} | TrainerName: ${entry.trainerName} | AuthorID: ${entry.authorId}`
+            `🔍 Entry ID: ${entry.id} | TrainerName: ${entry.trainerName} | AuthorID: ${entry.authorId}`,
           );
 
           return {
             ...entry,
-            trainerName: entry.trainerName || "Unknown Trainer", // ✅ Debug fallback
-            profilePicture: userProfile?.profilePicture || "/images/default-avatar.png",
+            trainerName: userProfile?.trainerName || "Unknown Trainer", // ✅ Ensure trainerName is always valid
+            profilePicture:
+              userProfile?.profilePicture || "/images/default-avatar.png",
           };
-        })
+        }),
       );
 
-      // ✅ Debug: Ensure final data structure
-      console.log("✅ Processed Entries with Profile Pics:", entriesWithProfilePics);
       setEntries(entriesWithProfilePics);
     };
 
     fetchEntriesWithProfiles();
   }, []);
 
+  // ✅ Delete handler to remove the entry from state
+  const handleDeleteEntry = (deletedId) => {
+    console.log(`🗑️ Removing entry from state: ${deletedId}`);
+    setEntries((prevEntries) =>
+      prevEntries.filter((entry) => entry.id !== deletedId),
+    );
+  };
+
+  const handleEntryClick = (entryId) => {
+    navigate(`/entries`, { state: { openEntryId: entryId } });
+  };
+
   return (
-    <section className="research-entries w-full max-w-3xl p-4 bg-card rounded-lg shadow-md">
-      <h2 className="text-title mb-3">Recent Research Entries</h2>
+    <section className="research-entries w-full max-w-5xl p-6 bg-card rounded-lg h-[60vh]">
+      {/* ✅ Header + Buttons (Always Visible) */}
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-title">Recent Entries</h2>
 
-      {/* "See More" & Create Entry (if logged in) */}
-      <div className="mt-4 flex justify-center items-center gap-3">
-        <Link to="/entries" className="btn-primary inline-block">
-          See More Entries
-        </Link>
-
-        {/* Only show pencil icon for logged-in users */}
-        {user && (
-          <Link
-            to="/create-entry"
-            className="flex items-center justify-center bg-pastelPink text-white p-2 rounded-lg hover:opacity-85"
-          >
-            <FaPencilAlt className="mr-2" />
-            Log Entry
+        <div className="flex justify-center items-center gap-3">
+          <Link to="/entries" className="btn-primary inline-block">
+            See All Entries
           </Link>
-        )}
+          {user && (
+            <Link
+              to="/create-entry"
+              className="flex btn-secondary items-center"
+            >
+              <FaPencilAlt className="mr-2" />
+              Log Entry
+            </Link>
+          )}
+        </div>
       </div>
 
-      {/* Show Sign-in Message for Logged-Out Users */}
       {!user && (
-        <p className="text-small text-gray-500 mt-2 text-center">
+        <p className="text-body text-left text-textDark mt-2">
           Sign in to make an entry!
         </p>
       )}
 
-      {/* Display Entries */}
-      <div className="entries-container flex flex-col gap-4 mt-4">
+      {/* ✅ Scrollable Container for Entries */}
+      <div
+        className="entries-container rounded-md mt-4 p-2 overflow-y-auto shadow-inner bg-[#ede8da]"
+        style={{
+          maxHeight: "48vh",
+          scrollbarColor: "#8fcc91",
+          scrollbarWidth: "thin",
+        }}
+      >
         {entries.length > 0 ? (
-          entries.map((entry) => {
-            // ✅ Debug: Ensure correct data is passed to Entry component
-            console.log("🔽 Passing to Entry.jsx:", entry);
-            return <Entry key={entry.id} {...entry} currentUser={user} />;
-          })
+          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 2, 768: 2 }}>
+            <Masonry gutter="16px">
+              {entries.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="w-full"
+                  onClick={() => handleEntryClick(entry.id)}
+                >
+                  <Entry
+                    {...entry}
+                    currentUser={user}
+                    isPreview={true}
+                    onDeleteEntry={handleDeleteEntry}
+                  />
+                </div>
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
         ) : (
           <p className="text-small text-gray-500">No research entries yet.</p>
         )}

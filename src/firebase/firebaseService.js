@@ -12,7 +12,7 @@ import {
   deleteDoc,
   arrayUnion,
   arrayRemove,
-  orderBy
+  orderBy,
 } from "firebase/firestore";
 import { getAuth, deleteUser } from "firebase/auth"; // ✅ Correct Firebase Auth imports
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
@@ -22,7 +22,7 @@ import {
   uploadBytes,
   getDownloadURL,
   deleteObject,
-  getMetadata
+  getMetadata,
 } from "firebase/storage";
 
 const storage = getStorage();
@@ -101,23 +101,46 @@ export const createUserProfile = async (
   }
 };
 
-/** 🔹 Fetch user data by UID */
-export const getUserProfile = async (uid) => {
+export const getUserProfile = async (userId, currentUser = null) => {
   try {
-    console.log("📡 Fetching user profile for UID:", uid);
-    const userRef = doc(db, "users", uid);
-    const docSnap = await getDoc(userRef);
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
 
-    if (docSnap.exists()) {
-      console.log("✅ User profile data:", docSnap.data());
-      return docSnap.data();
-    } else {
-      console.warn("⚠️ User profile not found.");
-      return null;
+    if (!userSnap.exists()) {
+      console.warn(`⚠️ No profile found for userId: ${userId}`);
+      return {
+        trainerName: "Unknown Trainer", // ✅ Ensures trainer name is always valid
+        profilePicture: "/images/default-avatar.png", // ✅ Default profile picture
+      };
     }
+
+    const userData = userSnap.data();
+    console.log(
+      `👤 Fetching Profile | userId: ${userId} | Visibility: ${userData.friendCodeVisibility}`,
+    );
+
+    // ✅ Always return trainer name and profile picture
+    const profile = {
+      trainerName: userData.trainerName || "Unknown Trainer",
+      profilePicture: userData.profilePicture || "/images/default-avatar.png",
+    };
+
+    // ✅ Friend Code Visibility Logic (unchanged)
+    if (
+      userData.friendCodeVisibility === "everyone" ||
+      (userData.friendCodeVisibility === "registered" && currentUser) ||
+      (currentUser && currentUser.uid === userId) // User can always see their own
+    ) {
+      profile.friendCode = userData.friendCode;
+    }
+
+    return profile;
   } catch (error) {
     console.error("🔥 Error fetching user profile:", error);
-    return null;
+    return {
+      trainerName: "Unknown Trainer", // ✅ Prevents crashes
+      profilePicture: "/images/default-avatar.png",
+    };
   }
 };
 
@@ -319,7 +342,7 @@ export const uploadEntryImage = async (userId, file) => {
     if (!file) throw new Error("Invalid file.");
 
     console.log("📸 Uploading image for user:", userId);
-    
+
     const storageRef = ref(getStorage(), `entryImages/${userId}/${file.name}`);
     await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(storageRef);
@@ -367,7 +390,14 @@ export const getComments = async (entryId) => {
 
     let comments = [];
     querySnapshot.forEach((doc) => {
-      comments.push({ id: doc.id, ...doc.data() });
+      const data = doc.data();
+      comments.push({
+        id: doc.id,
+        trainerName: data.trainerName || "Anonymous Trainer", // ✅ Ensure trainer name is always set
+        profilePicture: data.profilePicture || "/images/default-avatar.png", // ✅ Ensure profile picture is always set
+        text: data.text,
+        createdAt: data.createdAt,
+      });
     });
 
     return comments;
@@ -377,18 +407,25 @@ export const getComments = async (entryId) => {
   }
 };
 
-export const addComment = async (entryId, userId, trainerName, text) => {
+export const addComment = async (
+  entryId,
+  userId,
+  trainerName,
+  text,
+  profilePicture,
+) => {
   try {
     const commentData = {
       authorId: userId,
-      trainerName: trainerName,
+      trainerName: trainerName || "Anonymous Trainer",
+      profilePicture: profilePicture || "/images/default-avatar.png", // ✅ Ensure profile picture is always stored
       text: text,
       createdAt: new Date(),
     };
 
     const docRef = await addDoc(
       collection(db, `entries/${entryId}/comments`),
-      commentData
+      commentData,
     );
     console.log("✅ Comment successfully added:", docRef.id);
     return docRef.id;
@@ -398,3 +435,54 @@ export const addComment = async (entryId, userId, trainerName, text) => {
   }
 };
 
+/** 🔹 Function to Delete an Entry and Its Related Data */
+export const deleteEntry = async (entryId, userId, imageUrl) => {
+  try {
+    console.log(`🗑️ Attempting to delete entry: ${entryId}`);
+
+    // 1️⃣ Delete all comments associated with the entry
+    const commentsRef = collection(db, `entries/${entryId}/comments`);
+    const commentsSnapshot = await getDocs(commentsRef);
+
+    const commentDeletePromises = commentsSnapshot.docs.map((comment) =>
+      deleteDoc(doc(db, `entries/${entryId}/comments`, comment.id)),
+    );
+    await Promise.all(commentDeletePromises);
+    console.log(`✅ Deleted all comments for entry: ${entryId}`);
+
+    // 2️⃣ Delete the entry itself
+    await deleteDoc(doc(db, "entries", entryId));
+    console.log(`✅ Entry deleted successfully: ${entryId}`);
+
+    // 3️⃣ If an image is associated, delete it from Firebase Storage
+    if (imageUrl) {
+      try {
+        const storage = getStorage();
+        const imageRef = ref(storage, imageUrl);
+        await deleteObject(imageRef);
+        console.log(`✅ Entry image deleted: ${imageUrl}`);
+      } catch (error) {
+        console.warn(
+          `⚠️ Image deletion failed (may not exist): ${imageUrl}`,
+          error,
+        );
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("🔥 Error deleting entry:", error);
+    return false;
+  }
+};
+
+export const deleteComment = async (entryId, commentId) => {
+  try {
+    const commentRef = doc(db, `entries/${entryId}/comments/${commentId}`);
+    await deleteDoc(commentRef);
+    return true; // ✅ Success
+  } catch (error) {
+    console.error("🔥 Error deleting comment:", error);
+    return false; // ❌ Failed
+  }
+};

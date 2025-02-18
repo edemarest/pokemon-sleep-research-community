@@ -7,21 +7,19 @@ const Header = () => {
     <div>
       <Navbar />
       <header
-        className="header-container"
+        className="header-container mt-[75px]"
         style={{
           backgroundImage: `linear-gradient(to bottom, rgba(163, 217, 165, 0.8), rgba(163, 217, 165, 0.4)), url('/images/header_image.png')`,
           backgroundSize: "cover",
-          backgroundPosition: "center top 20%",
+          backgroundPosition: "center top 30%",
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="header-content">
+        <div>
           <h1 className="header-title">Pokémon Sleep Research Community</h1>
-          <p className="header-caption">
-            Sharing discoveries, tracking sleep, and building friendships
-          </p>
         </div>
       </header>
+      <div className="header-border"></div>
     </div>
   );
 };

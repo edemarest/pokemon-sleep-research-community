@@ -1,21 +1,60 @@
-/* Page Background */
-.bg-background {
-  background-color: #fdfbf6; /* Soft white cream */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ✅ Gradient Background */
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom 50%, #f0e2ce, #c9b597);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
-/* Main Content */
-main {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+/* ✅ Main Content Wrapper */
+.main-content {
+  position: relative;
+  flex: 1;
+  z-index: 1;
 }
 
-/* Footer */
-footer {
+/* ✅ Notebook Texture Overlay (Only under main content) */
+.main-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+/* ✅ Footer */
+.footer {
   padding: 20px;
   text-align: center;
   border-top: 2px solid #5d4037;
+}
+
+/* ✅ Scrollbar Styling for Full Page */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html::-webkit-scrollbar {
+  width: 10px;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: #8fcc91;
+  border-radius: 5px;
+}
+
+html::-webkit-scrollbar-track {
+  background-color: #e3dccb;
 }
