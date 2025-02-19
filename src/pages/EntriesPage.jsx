@@ -8,6 +8,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import Footer from "../sections/Footer";
 import "../styles/HomePage.css";
 import DynamicHeader from "../sections/DynamicHeader";
+import tagsData from "../data/tags.json";
 
 const EntriesPage = () => {
   const [entries, setEntries] = useState([]);
@@ -16,6 +17,7 @@ const EntriesPage = () => {
   const [expandedEntry, setExpandedEntry] = useState(null);
   const entryRefs = useRef({});
   const location = useLocation();
+  const availableTags = ["All", ...tagsData.tags];
 
   useEffect(() => {
     const fetchEntriesWithProfiles = async () => {
@@ -83,15 +85,14 @@ const EntriesPage = () => {
 
           {/* ✅ Tag Filters */}
           <div className="flex gap-2">
-            {["All", "General", "Q&A", "Brags", "Fails"].map((tag) => (
+            {availableTags.map((tag) => (
               <button
                 key={tag}
                 onClick={() => setFilterTag(tag === "All" ? null : tag)}
-                className={`px-4 py-2 rounded-lg text-sm font-bold ${
-                  filterTag === tag || (tag === "All" && !filterTag)
+                className={`px-4 py-2 rounded-lg text-sm font-bold ${filterTag === tag || (tag === "All" && !filterTag)
                     ? "bg-accentGreen text-white"
                     : "bg-[#dbd4c1] text-textDark"
-                }`}
+                  }`}
               >
                 {tag}
               </button>

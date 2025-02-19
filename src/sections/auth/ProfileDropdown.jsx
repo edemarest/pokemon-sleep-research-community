@@ -39,7 +39,7 @@ const ProfileDropdown = ({ setProfilePic }) => {
             setProfile(data);
             setTrainerName(data.trainerName || "");
             setFriendCode(data.friendCode || "");
-            setFriendCodeVisibility(data.friendCodeVisibility || "registered");
+            setFriendCodeVisibility(data.friendCodeVisibility || "hidden");
             setProfilePicState(data.profilePicture || defaultProfilePic);
           }
         } catch (err) {

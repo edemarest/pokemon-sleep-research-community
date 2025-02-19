@@ -8,6 +8,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { FaPaperclip } from "react-icons/fa";
 import censoredWords from "../data/censored_words.json";
+import tagsData from "../data/tags.json";
 
 // ✅ Load censored words dynamically
 const fetchProfanityList = async () => {
@@ -45,19 +46,7 @@ const EntryForm = () => {
   const [error, setError] = useState("");
   const [badWords, setBadWords] = useState([]); // ✅ Store filtered words
 
-  const availableTags = [
-    "General", // 🔹 Default/general discussions
-    "Q&A", // 🔹 Questions and answers
-    "Brags", // 🔹 Showcasing big achievements
-    "Fails", // 🔹 Funny or unfortunate moments
-    "Strategy", // 🔹 Tips and strategies for optimizing sleep tracking
-    "Events", // 🔹 Event discussions and participation reports
-    "Bugs & Issues", // 🔹 Reporting bugs or app issues
-    "Memes", // 🔹 Fun or humorous Pokémon Sleep content
-    "Guides", // 🔹 Step-by-step tutorials and walkthroughs
-    "Feedback", // 🔹 Suggestions and feedback for improving the app
-    "Updates", // 🔹 News and patch discussions
-  ];
+  const availableTags = tagsData.tags;
 
   // ✅ Load Profanity List on Mount
   useEffect(() => {

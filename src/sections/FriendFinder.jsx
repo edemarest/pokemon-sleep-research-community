@@ -58,9 +58,8 @@ const FriendFinder = () => {
               <CodeCard key={user.uid} trainer={userProfile} isUser />
             </>
           ) : null}
-
           {trainers
-            .filter((t) => t.trainerName)
+            .filter((t) => t.trainerName && t.uid !== user?.uid)
             .map((trainer) => (
               <CodeCard key={trainer.uid} trainer={trainer} />
             ))}

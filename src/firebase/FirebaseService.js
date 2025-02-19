@@ -96,7 +96,8 @@ export const getUserProfile = async (userId, currentUser = null) => {
     const profile = {
       trainerName: userData.trainerName || "Unknown Trainer",
       profilePicture: userData.profilePicture || "/images/default-avatar.png",
-    };
+      friendCodeVisibility: userData.friendCodeVisibility || "hidden", 
+    };    
 
     // ✅ Friend Code & Email Visibility Logic
     if (currentUser && currentUser.uid === userId) {
