@@ -22,7 +22,7 @@ const ResearchEntries = () => {
         fetchedEntries.map(async (entry) => {
           const userProfile = await getUserProfile(entry.authorId);
           console.log(
-            `🔍 Entry ID: ${entry.id} | TrainerName: ${entry.trainerName} | AuthorID: ${entry.authorId}`,
+            `🔍 Entry ID: ${entry.id} | TrainerName: ${entry.trainerName} | AuthorID: ${entry.authorId}`
           );
 
           return {
@@ -31,7 +31,7 @@ const ResearchEntries = () => {
             profilePicture:
               userProfile?.profilePicture || "/images/default-avatar.png",
           };
-        }),
+        })
       );
 
       setEntries(entriesWithProfilePics);
@@ -44,7 +44,7 @@ const ResearchEntries = () => {
   const handleDeleteEntry = (deletedId) => {
     console.log(`🗑️ Removing entry from state: ${deletedId}`);
     setEntries((prevEntries) =>
-      prevEntries.filter((entry) => entry.id !== deletedId),
+      prevEntries.filter((entry) => entry.id !== deletedId)
     );
   };
 
@@ -53,7 +53,7 @@ const ResearchEntries = () => {
   };
 
   return (
-    <section className="research-entries w-full max-w-5xl p-6 bg-card rounded-lg h-[60vh]">
+    <section className="research-entries">
       {/* ✅ Header + Buttons (Always Visible) */}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-title">Recent Entries</h2>
@@ -63,10 +63,7 @@ const ResearchEntries = () => {
             See All Entries
           </Link>
           {user && (
-            <Link
-              to="/create-entry"
-              className="flex btn-secondary items-center"
-            >
+            <Link to="/create-entry" className="flex btn-secondary items-center">
               <FaPencilAlt className="mr-2" />
               Log Entry
             </Link>
@@ -81,14 +78,7 @@ const ResearchEntries = () => {
       )}
 
       {/* ✅ Scrollable Container for Entries */}
-      <div
-        className="entries-container rounded-md mt-4 p-2 overflow-y-auto shadow-inner bg-[#ede8da]"
-        style={{
-          maxHeight: "48vh",
-          scrollbarColor: "#8fcc91",
-          scrollbarWidth: "thin",
-        }}
-      >
+      <div className="entries-container">
         {entries.length > 0 ? (
           <ResponsiveMasonry columnsCountBreakPoints={{ 350: 2, 768: 2 }}>
             <Masonry gutter="16px">

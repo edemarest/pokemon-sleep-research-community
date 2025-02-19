@@ -40,7 +40,7 @@ const Comment = ({
 
   return (
     <div className="flex items-center justify-between border-b border-gray-300 py-2">
-      <div className="flex items-center">
+      <div className="flex items-center text-left">
         <img
           src={profilePicture || DEFAULT_PFP} // ✅ Ensure correct profile picture
           alt={trainerName || "Anonymous Trainer"} // ✅ Ensure correct trainer name

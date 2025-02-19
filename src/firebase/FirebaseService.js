@@ -13,6 +13,8 @@ import {
   arrayUnion,
   arrayRemove,
   orderBy,
+  Timestamp,
+  collectionGroup,
 } from "firebase/firestore";
 import { getAuth, deleteUser } from "firebase/auth"; // ✅ Correct Firebase Auth imports
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
@@ -32,38 +34,24 @@ const DEFAULT_PFP = "/images/default-avatar.png";
 /** 🔹 Check if a trainer name or friend code already exists */
 export const checkUserExists = async (trainerName, friendCode) => {
   try {
-    console.log("🔍 Checking if user exists:", { trainerName, friendCode });
-
     const usersRef = collection(db, "users");
     const q1 = query(usersRef, where("trainerName", "==", trainerName));
     const q2 = query(usersRef, where("friendCode", "==", friendCode));
 
-    console.log("📡 Sending Firestore queries...");
     const [trainerNameCheck, friendCodeCheck] = await Promise.all([
       getDocs(q1),
       getDocs(q2),
     ]);
-
-    console.log(
-      "📜 Trainer Name Check:",
-      trainerNameCheck.docs.map((doc) => doc.data()),
-    );
-    console.log(
-      "📜 Friend Code Check:",
-      friendCodeCheck.docs.map((doc) => doc.data()),
-    );
 
     return {
       trainerNameExists: !trainerNameCheck.empty,
       friendCodeExists: !friendCodeCheck.empty,
     };
   } catch (error) {
-    console.error("🔥 Error checking user existence:", error);
     return { trainerNameExists: false, friendCodeExists: false };
   }
 };
 
-/** 🔹 Create a new user in Firestore */
 /** 🔹 Create a new user in Firestore */
 export const createUserProfile = async (
   uid,
@@ -73,13 +61,6 @@ export const createUserProfile = async (
   friendCodeVisibility,
 ) => {
   try {
-    console.log("📝 Creating user profile:", {
-      uid,
-      email,
-      trainerName,
-      friendCode,
-      friendCodeVisibility,
-    });
     const userRef = doc(db, "users", uid);
     await setDoc(userRef, {
       uid,
@@ -91,12 +72,8 @@ export const createUserProfile = async (
       createdAt: new Date(),
     });
 
-    console.log(
-      "✅ User profile successfully created in Firestore with default profile picture!",
-    );
     return true;
   } catch (error) {
-    console.error("🔥 Error creating user profile:", error);
     return false;
   }
 };
@@ -107,7 +84,6 @@ export const getUserProfile = async (userId, currentUser = null) => {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      console.warn(`⚠️ No profile found for userId: ${userId}`);
       return {
         trainerName: "Unknown Trainer", // ✅ Ensures trainer name is always valid
         profilePicture: "/images/default-avatar.png", // ✅ Default profile picture
@@ -115,9 +91,6 @@ export const getUserProfile = async (userId, currentUser = null) => {
     }
 
     const userData = userSnap.data();
-    console.log(
-      `👤 Fetching Profile | userId: ${userId} | Visibility: ${userData.friendCodeVisibility}`,
-    );
 
     // ✅ Always return trainer name and profile picture
     const profile = {
@@ -136,7 +109,6 @@ export const getUserProfile = async (userId, currentUser = null) => {
 
     return profile;
   } catch (error) {
-    console.error("🔥 Error fetching user profile:", error);
     return {
       trainerName: "Unknown Trainer", // ✅ Prevents crashes
       profilePicture: "/images/default-avatar.png",
@@ -147,20 +119,11 @@ export const getUserProfile = async (userId, currentUser = null) => {
 /** 🔹 Update user profile */
 export const updateUserProfile = async (uid, updatedData) => {
   try {
-    console.log(
-      "✏️ Updating user profile for UID:",
-      uid,
-      "with data:",
-      updatedData,
-    );
-
     const userRef = doc(db, "users", uid);
     await updateDoc(userRef, updatedData);
 
-    console.log("✅ User profile successfully updated!");
     return true;
   } catch (error) {
-    console.error("🔥 Error updating user profile:", error);
     return false;
   }
 };
@@ -186,10 +149,7 @@ export const deleteUserProfile = async (uid) => {
 
     // 🔹 Delete the user from Firebase Authentication
     await deleteUser(user);
-
-    console.log("✅ User profile and account successfully deleted.");
   } catch (error) {
-    console.error("🔥 Error deleting user profile:", error);
     throw new Error("Failed to delete profile. " + error.message);
   }
 };
@@ -201,13 +161,6 @@ export const uploadProfilePicture = async (uid, file) => {
       throw new Error("Invalid file. Please select a valid image.");
     }
 
-    console.log(
-      "📸 Uploading new profile picture for UID:",
-      uid,
-      "File:",
-      file,
-    );
-
     // ✅ Ensure the file is correctly passed to Firebase Storage
     const storageRef = ref(storage, `profilePictures/${uid}/profile.jpg`);
 
@@ -217,10 +170,8 @@ export const uploadProfilePicture = async (uid, file) => {
     // ✅ Get the download URL for the uploaded image
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    console.log("✅ Profile picture uploaded successfully! URL:", downloadURL);
     return downloadURL;
   } catch (error) {
-    console.error("🔥 Error uploading profile picture:", error);
     return null;
   }
 };
@@ -228,22 +179,17 @@ export const uploadProfilePicture = async (uid, file) => {
 /** 🔹 Delete profile picture and reset to default */
 export const deleteProfilePicture = async (uid) => {
   try {
-    console.log("🗑️ Attempting to delete profile picture for UID:", uid);
-
     const storageRef = ref(storage, `profilePictures/${uid}/profile.jpg`);
 
     // ✅ Check if the profile picture exists before deleting
     try {
       await getMetadata(storageRef); // Will throw an error if file does not exist
     } catch (error) {
-      console.warn("⚠️ Profile picture does not exist. Skipping deletion.");
       return;
     }
 
     await deleteObject(storageRef);
-    console.log("✅ Profile picture deleted successfully.");
   } catch (error) {
-    console.error("🔥 Error deleting profile picture:", error);
   }
 };
 
@@ -269,7 +215,6 @@ export const getPublicTrainerCodes = async (user) => {
     const trainerSnapshot = await getDocs(trainerQuery);
     return trainerSnapshot.docs.map((doc) => doc.data());
   } catch (error) {
-    console.error("🔥 Error fetching public trainer codes:", error);
     return [];
   }
 };
@@ -283,13 +228,11 @@ export const getEntries = async (limit) => {
     let entries = [];
     querySnapshot.forEach((doc) => {
       const entryData = doc.data();
-      console.log("🔥 Fetched Entry Data:", entryData); // ✅ Debugging output
       entries.push({ id: doc.id, ...entryData });
     });
 
     return entries.slice(0, limit);
   } catch (error) {
-    console.error("🔥 Error fetching entries:", error);
     return [];
   }
 };
@@ -311,7 +254,6 @@ export const getAllEntries = async (filterTag = null) => {
 
     return entries;
   } catch (error) {
-    console.error("🔥 Error fetching entries:", error);
     return [];
   }
 };
@@ -329,10 +271,8 @@ export const saveEntry = async (userId, trainerName, text, imageUrl, tags) => {
     };
 
     const docRef = await addDoc(collection(db, "entries"), entryData);
-    console.log("✅ Entry successfully created:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("🔥 Error saving entry:", error);
     return null;
   }
 };
@@ -341,16 +281,12 @@ export const uploadEntryImage = async (userId, file) => {
   try {
     if (!file) throw new Error("Invalid file.");
 
-    console.log("📸 Uploading image for user:", userId);
-
     const storageRef = ref(getStorage(), `entryImages/${userId}/${file.name}`);
     await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(storageRef);
 
-    console.log("✅ Image uploaded successfully! URL:", downloadURL);
     return downloadURL;
   } catch (error) {
-    console.error("🔥 Error uploading entry image:", error);
     return null;
   }
 };
@@ -361,7 +297,6 @@ export const toggleLike = async (entryId, userId) => {
     const entrySnapshot = await getDoc(entryRef);
 
     if (!entrySnapshot.exists()) {
-      console.error("⚠️ Entry does not exist.");
       return false;
     }
 
@@ -374,10 +309,8 @@ export const toggleLike = async (entryId, userId) => {
         : arrayUnion(userId), // Add like
     });
 
-    console.log(isLiked ? "👍 Like removed" : "❤️ Like added");
     return true;
   } catch (error) {
-    console.error("🔥 Error toggling like:", error);
     return false;
   }
 };
@@ -402,7 +335,6 @@ export const getComments = async (entryId) => {
 
     return comments;
   } catch (error) {
-    console.error("🔥 Error fetching comments:", error);
     return [];
   }
 };
@@ -427,10 +359,8 @@ export const addComment = async (
       collection(db, `entries/${entryId}/comments`),
       commentData,
     );
-    console.log("✅ Comment successfully added:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("🔥 Error adding comment:", error);
     return null;
   }
 };
@@ -438,8 +368,6 @@ export const addComment = async (
 /** 🔹 Function to Delete an Entry and Its Related Data */
 export const deleteEntry = async (entryId, userId, imageUrl) => {
   try {
-    console.log(`🗑️ Attempting to delete entry: ${entryId}`);
-
     // 1️⃣ Delete all comments associated with the entry
     const commentsRef = collection(db, `entries/${entryId}/comments`);
     const commentsSnapshot = await getDocs(commentsRef);
@@ -448,11 +376,9 @@ export const deleteEntry = async (entryId, userId, imageUrl) => {
       deleteDoc(doc(db, `entries/${entryId}/comments`, comment.id)),
     );
     await Promise.all(commentDeletePromises);
-    console.log(`✅ Deleted all comments for entry: ${entryId}`);
 
     // 2️⃣ Delete the entry itself
     await deleteDoc(doc(db, "entries", entryId));
-    console.log(`✅ Entry deleted successfully: ${entryId}`);
 
     // 3️⃣ If an image is associated, delete it from Firebase Storage
     if (imageUrl) {
@@ -460,18 +386,12 @@ export const deleteEntry = async (entryId, userId, imageUrl) => {
         const storage = getStorage();
         const imageRef = ref(storage, imageUrl);
         await deleteObject(imageRef);
-        console.log(`✅ Entry image deleted: ${imageUrl}`);
       } catch (error) {
-        console.warn(
-          `⚠️ Image deletion failed (may not exist): ${imageUrl}`,
-          error,
-        );
       }
     }
 
     return true;
   } catch (error) {
-    console.error("🔥 Error deleting entry:", error);
     return false;
   }
 };
@@ -482,7 +402,126 @@ export const deleteComment = async (entryId, commentId) => {
     await deleteDoc(commentRef);
     return true; // ✅ Success
   } catch (error) {
-    console.error("🔥 Error deleting comment:", error);
     return false; // ❌ Failed
+  }
+};
+
+const getPastWeekTimestamp = () => {
+  const now = new Date();
+  now.setDate(now.getDate() - 7); // 🔹 Get date 7 days ago
+  return Timestamp.fromDate(now);
+};
+
+/** ✅ Get number of posts and comments made by each user in the past week */
+export const getResearcherOfTheWeek = async () => {
+  const weekAgo = getPastWeekTimestamp();
+  const usersStats = {};
+
+  try {
+    // 🔹 Count entries in the past week
+    const entriesQuery = query(collection(db, "entries"), where("createdAt", ">", weekAgo));
+    const entriesSnapshot = await getDocs(entriesQuery);
+
+    entriesSnapshot.forEach((doc) => {
+      const { authorId } = doc.data();
+      if (!usersStats[authorId]) usersStats[authorId] = { entries: 0, comments: 0 };
+      usersStats[authorId].entries += 1;
+    });
+
+    // 🔹 Count comments in the past week
+    const commentsQuery = query(collection(db, "entries"), orderBy("createdAt", "desc"));
+    const commentsSnapshot = await getDocs(commentsQuery);
+
+    commentsSnapshot.forEach((entryDoc) => {
+      const commentsRef = collection(db, `entries/${entryDoc.id}/comments`);
+      commentsRef.forEach((comment) => {
+        const { authorId } = comment.data();
+        if (!usersStats[authorId]) usersStats[authorId] = { entries: 0, comments: 0 };
+        usersStats[authorId].comments += 1;
+      });
+    });
+
+    // 🔹 Find top contributor
+    let topUser = null;
+    let maxContributions = 0;
+    for (const userId in usersStats) {
+      const contributions = usersStats[userId].entries + usersStats[userId].comments;
+      if (contributions > maxContributions) {
+        maxContributions = contributions;
+        topUser = userId;
+      }
+    }
+
+    console.log("🔥 Researcher of the week:", topUser, "with contributions:", maxContributions);
+    return topUser ? { userId: topUser, contributions: maxContributions } : null;
+  } catch (error) {
+    console.error("🔥 Error fetching researcher of the week:", error);
+    return null;
+  }
+};
+
+/** 🔹 Get Researcher of the Week based on past week's contributions */
+export const getResearcherOfTheWeekWithProfile = async () => {
+  try {
+    console.log("📡 Fetching Researcher of the Week...");
+
+    // ✅ Get the timestamp for 7 days ago
+    const oneWeekAgo = Timestamp.fromDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+
+    // ✅ Query entries made in the past week
+    const entriesQuery = query(
+      collection(db, "entries"),
+      where("createdAt", ">", oneWeekAgo),
+      orderBy("createdAt", "desc")
+    );
+
+    // ✅ Query comments made in the past week
+    const commentsQuery = query(
+      collectionGroup(db, "comments"),
+      where("createdAt", ">", oneWeekAgo),
+      orderBy("createdAt", "desc")
+    );
+
+    const [entriesSnapshot, commentsSnapshot] = await Promise.all([
+      getDocs(entriesQuery),
+      getDocs(commentsQuery)
+    ]);
+
+    // ✅ Count entries & comments per user
+    const contributionCount = {};
+    
+    entriesSnapshot.forEach((doc) => {
+      const { authorId } = doc.data();
+      contributionCount[authorId] = (contributionCount[authorId] || 0) + 1;
+    });
+
+    commentsSnapshot.forEach((doc) => {
+      const { authorId } = doc.data();
+      contributionCount[authorId] = (contributionCount[authorId] || 0) + 1;
+    });
+
+    console.log("📊 Contribution Counts:", contributionCount);
+
+    // ✅ Find the user with the most contributions
+    const topResearcherId = Object.keys(contributionCount).reduce((a, b) =>
+      contributionCount[a] > contributionCount[b] ? a : b
+    );
+
+    if (!topResearcherId) {
+      console.warn("⚠️ No valid researcher found this week.");
+      return null;
+    }
+
+    // ✅ Fetch top researcher's profile
+    const researcherProfile = await getUserProfile(topResearcherId);
+
+    return {
+      trainerName: researcherProfile?.trainerName || "Anonymous Trainer",
+      profilePicture: researcherProfile?.profilePicture || "/images/default-avatar.png",
+      contributions: contributionCount[topResearcherId],
+    };
+  } catch (error) {
+    console.error("🔥 Error fetching Researcher of the Week:", error);
+    return null;
   }
 };

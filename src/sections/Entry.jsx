@@ -61,13 +61,13 @@ const Entry = ({
   const profilePicUrl = profilePicture || DEFAULT_PFP;
   const displayTrainerName = trainerName || "Anonymous Trainer";
   const [currentUserProfile, setCurrentUserProfile] = useState(null);
+  const [likeError, setLikeError] = useState("");
 
   useEffect(() => {
     if (currentUser?.uid) {
       getUserProfile(currentUser.uid).then((profile) => {
         if (profile) {
           setCurrentUserProfile(profile);
-          console.log("✅ Loaded current user profile:", profile);
         } else {
           console.warn("⚠️ No Firestore profile found for current user.");
         }
@@ -87,6 +87,14 @@ const Entry = ({
 
   const handleLike = async (e) => {
     e.stopPropagation();
+
+    if (!currentUser) {
+      setLikeError("You must be logged in to like an entry!");
+      return;
+    }
+
+    setLikeError("");
+
     const success = await toggleLike(id, currentUser.uid);
     if (success) {
       setLiked(!liked);
@@ -100,11 +108,6 @@ const Entry = ({
       console.error("❌ No currentUser found when adding a comment.");
       return;
     }
-
-    console.log(
-      "🔍 Fetching currentUser data before posting comment:",
-      currentUser,
-    );
 
     const moderationError = moderateText(newComment);
     if (moderationError) {
@@ -241,17 +244,28 @@ const Entry = ({
         ))}
       </div>
 
-      <div className="flex items-center gap-4">
-        <button
-          onClick={handleLike}
-          className="flex items-center text-body prevent-collapse"
-        >
-          {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}{" "}
-          <span className="ml-1">{likeCount}</span>
-        </button>
-        <button className="flex items-center text-body prevent-collapse">
-          <FaComment /> <span className="ml-1">{comments.length}</span>
-        </button>
+      {/* Like & Comment Icons */}
+      <div className="flex flex-col gap-2 mt-2">
+        <div className="flex items-center gap-4">
+          {/* Like Button */}
+          <button
+            onClick={handleLike}
+            className="flex items-center text-body prevent-collapse"
+          >
+            {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}{" "}
+            <span className="ml-1">{likeCount}</span>
+          </button>
+
+          {/* Comment Button */}
+          <button className="flex items-center text-body prevent-collapse">
+            <FaComment /> <span className="ml-1">{comments.length}</span>
+          </button>
+        </div>
+
+        {/* ✅ Display login message only when needed */}
+        {likeError && (
+          <p className="text-red-600 text-sm">{likeError}</p>
+        )}
       </div>
 
       <AnimatePresence>

@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../sections/Header";
 import ResearchEntries from "../sections/ResearchEntries";
 import FriendFinder from "../sections/FriendFinder";
+import ResearcherOfTheWeek from "../sections/ResearcherOfTheWeek"; // ✅ New Import
 import Footer from "../sections/Footer";
 import "../styles/HomePage.css";
 
@@ -20,8 +21,9 @@ const HomePage = () => {
           </section>
 
           {/* Friend Finder Section */}
-          <section className="w-full">
+          <section className="w-full flex flex-col gap-6">
             <FriendFinder />
+            <ResearcherOfTheWeek /> {/* ✅ New Section */}
           </section>
         </main>
       </div>

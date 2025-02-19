@@ -2,12 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Research Entries Container */
 .research-entries {
   @apply w-full max-w-5xl p-6 bg-card rounded-lg;
+  height: calc(100vh - 250px); /* Adjust height dynamically */
+  display: flex;
+  flex-direction: column;
 }
 
+/* Scrollable Entries List */
 .research-entries .entries-container {
   @apply rounded-md mt-4 p-2 overflow-y-auto shadow-inner bg-[#ede8da];
+  flex-grow: 1; /* Makes it fill remaining space */
+  min-height: 0; /* Prevents flex overflow issues */
 }
 
 /* ✅ Green Scrollbar */
