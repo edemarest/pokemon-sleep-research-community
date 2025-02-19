@@ -15,23 +15,16 @@ const ResearchEntries = () => {
   useEffect(() => {
     const fetchEntriesWithProfiles = async () => {
       const fetchedEntries = await getEntries(6); // ✅ Fetch top 6 entries
-
-      console.log("📜 Firestore Fetched Entries:", fetchedEntries);
-
       const entriesWithProfilePics = await Promise.all(
         fetchedEntries.map(async (entry) => {
           const userProfile = await getUserProfile(entry.authorId);
-          console.log(
-            `🔍 Entry ID: ${entry.id} | TrainerName: ${entry.trainerName} | AuthorID: ${entry.authorId}`
-          );
-
           return {
             ...entry,
             trainerName: userProfile?.trainerName || "Unknown Trainer", // ✅ Ensure trainerName is always valid
             profilePicture:
               userProfile?.profilePicture || "/images/default-avatar.png",
           };
-        })
+        }),
       );
 
       setEntries(entriesWithProfilePics);
@@ -42,9 +35,8 @@ const ResearchEntries = () => {
 
   // ✅ Delete handler to remove the entry from state
   const handleDeleteEntry = (deletedId) => {
-    console.log(`🗑️ Removing entry from state: ${deletedId}`);
     setEntries((prevEntries) =>
-      prevEntries.filter((entry) => entry.id !== deletedId)
+      prevEntries.filter((entry) => entry.id !== deletedId),
     );
   };
 
@@ -63,7 +55,10 @@ const ResearchEntries = () => {
             See All Entries
           </Link>
           {user && (
-            <Link to="/create-entry" className="flex btn-secondary items-center">
+            <Link
+              to="/create-entry"
+              className="flex btn-secondary items-center"
+            >
               <FaPencilAlt className="mr-2" />
               Log Entry
             </Link>

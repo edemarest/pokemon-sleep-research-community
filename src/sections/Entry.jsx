@@ -263,9 +263,7 @@ const Entry = ({
         </div>
 
         {/* ✅ Display login message only when needed */}
-        {likeError && (
-          <p className="text-red-600 text-sm">{likeError}</p>
-        )}
+        {likeError && <p className="text-red-600 text-sm">{likeError}</p>}
       </div>
 
       <AnimatePresence>

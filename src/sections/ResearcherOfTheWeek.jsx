@@ -19,7 +19,9 @@ const ResearcherOfTheWeek = () => {
     <div className="researcher-container bg-card p-4 rounded-lg shadow-md text-center">
       <h2 className="text-title text-2xl mb-2">Researcher of the Week</h2>
       {loading ? (
-        <p className="text-body text-gray-500">Loading Researcher of the Week...</p>
+        <p className="text-body text-gray-500">
+          Loading Researcher of the Week...
+        </p>
       ) : researcher ? (
         <div className="flex flex-col items-center">
           <img
@@ -33,7 +35,9 @@ const ResearcherOfTheWeek = () => {
           </p>
         </div>
       ) : (
-        <p className="text-body text-gray-500">No researcher selected this week.</p>
+        <p className="text-body text-gray-500">
+          No researcher selected this week.
+        </p>
       )}
     </div>
   );

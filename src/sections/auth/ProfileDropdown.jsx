@@ -34,7 +34,7 @@ const ProfileDropdown = ({ setProfilePic }) => {
     const fetchProfile = async () => {
       if (user) {
         try {
-          const data = await getUserProfile(user.uid);
+          const data = await getUserProfile(user.uid, user);
           if (data) {
             setProfile(data);
             setTrainerName(data.trainerName || "");

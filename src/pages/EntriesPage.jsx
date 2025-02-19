@@ -7,7 +7,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { FaPencilAlt } from "react-icons/fa";
 import Footer from "../sections/Footer";
 import "../styles/HomePage.css";
-import ResearchHeader from "../sections/ResearchHeader";
+import DynamicHeader from "../sections/DynamicHeader";
 
 const EntriesPage = () => {
   const [entries, setEntries] = useState([]);
@@ -56,7 +56,7 @@ const EntriesPage = () => {
 
   return (
     <div className="home-container">
-      <ResearchHeader />
+      <DynamicHeader />
 
       {/* ✅ Main Content Area */}
       <div className="main-content">

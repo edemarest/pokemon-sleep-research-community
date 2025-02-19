@@ -1,11 +1,10 @@
-/* ✅ Shared Header Styles */
-.header-container,
-.research-header-container {
+/* ✅ Ensure headers take full space and center text */
+.header-container {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* ✅ Ensures text remains centered */
+  align-items: center; /* ✅ Centers horizontally */
   text-align: center;
   color: white;
   padding: 20px;
@@ -13,28 +12,19 @@
 }
 
 .header-container {
-  height: 200px;
+  height: 275px; /* ✅ Matches JS height */
 }
 
 .research-header-container {
-  height: 150px;
+  height: 175px; /* ✅ Matches JS height */
 }
 
 /* ✅ Ensures title text is visually consistent */
-.header-title,
-.research-header-title {
+.header-title {
   font-size: 2.5rem;
   font-family: "Fredoka One", sans-serif;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* ✅ Ensures captions are also the same */
-.header-caption,
-.research-header-caption {
-  font-size: 1rem;
-  font-family: "Nunito", sans-serif;
-  margin-top: 10px;
-  opacity: 0.9;
+  transition: transform 0.5s ease-in-out; /* ✅ Smooth text scaling */
 }
 
 .research-header-border {

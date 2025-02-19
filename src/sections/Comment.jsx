@@ -14,13 +14,6 @@ const Comment = ({
   onDeleteComment,
 }) => {
   const isAuthor = currentUserTrainerName === trainerName;
-  console.log("🛠️ Debug Log - Comment Rendering:");
-  console.log("👉 Trainer Name (Comment Author):", trainerName);
-  console.log("👉 Current User Trainer Name:", currentUserTrainerName);
-  console.log("✅ isAuthor (Should Show Trash Icon?):", isAuthor);
-
-  console.log("✅ isAuthor (Should Show Trash Icon?):", isAuthor); // ✅ Debugging visibility of trash icon
-
   const handleDelete = async () => {
     if (
       !window.confirm(
@@ -31,7 +24,6 @@ const Comment = ({
 
     const success = await deleteComment(entryId, commentId);
     if (success) {
-      console.log(`🗑️ Successfully deleted comment: ${commentId}`);
       onDeleteComment(commentId); // ✅ Instantly remove from UI
     } else {
       console.error("🔥 Failed to delete comment.");

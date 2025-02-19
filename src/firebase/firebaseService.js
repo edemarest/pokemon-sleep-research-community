@@ -85,8 +85,8 @@ export const getUserProfile = async (userId, currentUser = null) => {
 
     if (!userSnap.exists()) {
       return {
-        trainerName: "Unknown Trainer", // ✅ Ensures trainer name is always valid
-        profilePicture: "/images/default-avatar.png", // ✅ Default profile picture
+        trainerName: "Unknown Trainer",
+        profilePicture: "/images/default-avatar.png",
       };
     }
 
@@ -98,19 +98,26 @@ export const getUserProfile = async (userId, currentUser = null) => {
       profilePicture: userData.profilePicture || "/images/default-avatar.png",
     };
 
-    // ✅ Friend Code Visibility Logic (unchanged)
-    if (
-      userData.friendCodeVisibility === "everyone" ||
-      (userData.friendCodeVisibility === "registered" && currentUser) ||
-      (currentUser && currentUser.uid === userId) // User can always see their own
-    ) {
+    // ✅ Friend Code & Email Visibility Logic
+    if (currentUser && currentUser.uid === userId) {
+      // 🔹 If the logged-in user is viewing their own profile, show everything
+      profile.email = userData.email;
       profile.friendCode = userData.friendCode;
+    } else {
+      // 🔹 Otherwise, check visibility settings
+      if (
+        userData.friendCodeVisibility === "everyone" ||
+        (userData.friendCodeVisibility === "registered" && currentUser)
+      ) {
+        profile.friendCode = userData.friendCode;
+      }
     }
 
     return profile;
   } catch (error) {
+    console.error("🔥 Error fetching user profile:", error);
     return {
-      trainerName: "Unknown Trainer", // ✅ Prevents crashes
+      trainerName: "Unknown Trainer",
       profilePicture: "/images/default-avatar.png",
     };
   }
@@ -127,8 +134,11 @@ export const updateUserProfile = async (uid, updatedData) => {
     return false;
   }
 };
+
 export const deleteUserProfile = async (uid) => {
   try {
+    console.log(`🗑️ Deleting user profile and all related data for: ${uid}...`);
+
     // 🔹 Re-authenticate user before deletion
     const user = auth.currentUser;
     if (!user) throw new Error("No authenticated user found.");
@@ -141,16 +151,71 @@ export const deleteUserProfile = async (uid) => {
     const credential = EmailAuthProvider.credential(user.email, password);
     await reauthenticateWithCredential(user, credential);
 
-    // 🔹 Delete profile picture first (if it exists)
+    // 🔹 Delete all user data (entries, comments, images)
+    await deleteUserData(uid);
+
+    // 🔹 Finally, delete the user from Firebase Authentication
+    await deleteUser(user);
+
+    console.log(`✅ Successfully deleted user account and data: ${uid}`);
+    return true;
+  } catch (error) {
+    console.error("🔥 Error deleting profile:", error);
+    throw new Error("Failed to delete profile. " + error.message);
+  }
+};
+
+/** 🔹 Deletes all user data when they delete their account */
+export const deleteUserData = async (uid) => {
+  try {
+    console.log(`🗑️ Deleting user data for: ${uid}...`);
+
+    // 🔹 1. Delete the user's own entries
+    const entriesQuery = query(
+      collection(db, "entries"),
+      where("authorId", "==", uid),
+    );
+    const entriesSnapshot = await getDocs(entriesQuery);
+
+    const deleteEntryPromises = entriesSnapshot.docs.map(async (entryDoc) => {
+      // Delete all comments under this entry first
+      const commentsRef = collection(db, `entries/${entryDoc.id}/comments`);
+      const commentsSnapshot = await getDocs(commentsRef);
+
+      const deleteCommentsPromises = commentsSnapshot.docs.map((comment) =>
+        deleteDoc(doc(db, `entries/${entryDoc.id}/comments`, comment.id)),
+      );
+      await Promise.all(deleteCommentsPromises);
+
+      // Delete the entry itself
+      await deleteDoc(entryDoc.ref);
+    });
+
+    await Promise.all(deleteEntryPromises);
+
+    // 🔹 2. Delete all comments the user made on other people's entries
+    const commentsQuery = query(
+      collectionGroup(db, "comments"),
+      where("authorId", "==", uid),
+    );
+    const commentsSnapshot = await getDocs(commentsQuery);
+
+    const deleteUserCommentsPromises = commentsSnapshot.docs.map((comment) =>
+      deleteDoc(comment.ref),
+    );
+    await Promise.all(deleteUserCommentsPromises);
+
+    // 🔹 3. Delete profile picture
     await deleteProfilePicture(uid);
 
-    // 🔹 Delete user profile from Firestore
+    // 🔹 4. Delete user document from Firestore
     await deleteDoc(doc(db, "users", uid));
 
-    // 🔹 Delete the user from Firebase Authentication
-    await deleteUser(user);
+    console.log(`✅ Successfully deleted all data for user: ${uid}`);
+    return true;
   } catch (error) {
-    throw new Error("Failed to delete profile. " + error.message);
+    console.error("🔥 Error deleting user data:", error);
+    return false;
   }
 };
 
@@ -189,8 +254,7 @@ export const deleteProfilePicture = async (uid) => {
     }
 
     await deleteObject(storageRef);
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 /** 🔹 Fetch Public Trainer Codes */
@@ -386,8 +450,7 @@ export const deleteEntry = async (entryId, userId, imageUrl) => {
         const storage = getStorage();
         const imageRef = ref(storage, imageUrl);
         await deleteObject(imageRef);
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
     return true;
@@ -419,24 +482,32 @@ export const getResearcherOfTheWeek = async () => {
 
   try {
     // 🔹 Count entries in the past week
-    const entriesQuery = query(collection(db, "entries"), where("createdAt", ">", weekAgo));
+    const entriesQuery = query(
+      collection(db, "entries"),
+      where("createdAt", ">", weekAgo),
+    );
     const entriesSnapshot = await getDocs(entriesQuery);
 
     entriesSnapshot.forEach((doc) => {
       const { authorId } = doc.data();
-      if (!usersStats[authorId]) usersStats[authorId] = { entries: 0, comments: 0 };
+      if (!usersStats[authorId])
+        usersStats[authorId] = { entries: 0, comments: 0 };
       usersStats[authorId].entries += 1;
     });
 
     // 🔹 Count comments in the past week
-    const commentsQuery = query(collection(db, "entries"), orderBy("createdAt", "desc"));
+    const commentsQuery = query(
+      collection(db, "entries"),
+      orderBy("createdAt", "desc"),
+    );
     const commentsSnapshot = await getDocs(commentsQuery);
 
     commentsSnapshot.forEach((entryDoc) => {
       const commentsRef = collection(db, `entries/${entryDoc.id}/comments`);
       commentsRef.forEach((comment) => {
         const { authorId } = comment.data();
-        if (!usersStats[authorId]) usersStats[authorId] = { entries: 0, comments: 0 };
+        if (!usersStats[authorId])
+          usersStats[authorId] = { entries: 0, comments: 0 };
         usersStats[authorId].comments += 1;
       });
     });
@@ -445,15 +516,23 @@ export const getResearcherOfTheWeek = async () => {
     let topUser = null;
     let maxContributions = 0;
     for (const userId in usersStats) {
-      const contributions = usersStats[userId].entries + usersStats[userId].comments;
+      const contributions =
+        usersStats[userId].entries + usersStats[userId].comments;
       if (contributions > maxContributions) {
         maxContributions = contributions;
         topUser = userId;
       }
     }
 
-    console.log("🔥 Researcher of the week:", topUser, "with contributions:", maxContributions);
-    return topUser ? { userId: topUser, contributions: maxContributions } : null;
+    console.log(
+      "🔥 Researcher of the week:",
+      topUser,
+      "with contributions:",
+      maxContributions,
+    );
+    return topUser
+      ? { userId: topUser, contributions: maxContributions }
+      : null;
   } catch (error) {
     console.error("🔥 Error fetching researcher of the week:", error);
     return null;
@@ -466,30 +545,32 @@ export const getResearcherOfTheWeekWithProfile = async () => {
     console.log("📡 Fetching Researcher of the Week...");
 
     // ✅ Get the timestamp for 7 days ago
-    const oneWeekAgo = Timestamp.fromDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+    const oneWeekAgo = Timestamp.fromDate(
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    );
 
     // ✅ Query entries made in the past week
     const entriesQuery = query(
       collection(db, "entries"),
       where("createdAt", ">", oneWeekAgo),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
 
     // ✅ Query comments made in the past week
     const commentsQuery = query(
       collectionGroup(db, "comments"),
       where("createdAt", ">", oneWeekAgo),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
 
     const [entriesSnapshot, commentsSnapshot] = await Promise.all([
       getDocs(entriesQuery),
-      getDocs(commentsQuery)
+      getDocs(commentsQuery),
     ]);
 
     // ✅ Count entries & comments per user
     const contributionCount = {};
-    
+
     entriesSnapshot.forEach((doc) => {
       const { authorId } = doc.data();
       contributionCount[authorId] = (contributionCount[authorId] || 0) + 1;
@@ -504,7 +585,7 @@ export const getResearcherOfTheWeekWithProfile = async () => {
 
     // ✅ Find the user with the most contributions
     const topResearcherId = Object.keys(contributionCount).reduce((a, b) =>
-      contributionCount[a] > contributionCount[b] ? a : b
+      contributionCount[a] > contributionCount[b] ? a : b,
     );
 
     if (!topResearcherId) {
@@ -517,7 +598,8 @@ export const getResearcherOfTheWeekWithProfile = async () => {
 
     return {
       trainerName: researcherProfile?.trainerName || "Anonymous Trainer",
-      profilePicture: researcherProfile?.profilePicture || "/images/default-avatar.png",
+      profilePicture:
+        researcherProfile?.profilePicture || "/images/default-avatar.png",
       contributions: contributionCount[topResearcherId],
     };
   } catch (error) {

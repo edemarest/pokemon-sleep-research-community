@@ -14,11 +14,13 @@ const App = () => {
     <Router>
       <div className="App">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/entries" element={<EntriesPage />} />
-          <Route path="/create-entry" element={<EntryForm />} />
-        </Routes>
+        <div className="page-content">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/entries" element={<EntriesPage />} />
+            <Route path="/create-entry" element={<EntryForm />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );

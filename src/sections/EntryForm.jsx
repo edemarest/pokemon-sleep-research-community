@@ -18,7 +18,7 @@ const fetchProfanityList = async () => {
 
 const moderateText = (text) => {
   // 1️⃣ Minimum & Maximum Length Check
-  if (text.length < 15) return "Your post must be at least 15 characters long.";
+  if (text.length < 1) return "Your post must be at least 1 character long.";
   if (text.length > 3000) return "Your post exceeds the 3000-character limit.";
 
   // 2️⃣ Check for Profanity Using RegEx
@@ -45,7 +45,19 @@ const EntryForm = () => {
   const [error, setError] = useState("");
   const [badWords, setBadWords] = useState([]); // ✅ Store filtered words
 
-  const availableTags = ["General", "Q&A", "Brags", "Fails"];
+  const availableTags = [
+    "General", // 🔹 Default/general discussions
+    "Q&A", // 🔹 Questions and answers
+    "Brags", // 🔹 Showcasing big achievements
+    "Fails", // 🔹 Funny or unfortunate moments
+    "Strategy", // 🔹 Tips and strategies for optimizing sleep tracking
+    "Events", // 🔹 Event discussions and participation reports
+    "Bugs & Issues", // 🔹 Reporting bugs or app issues
+    "Memes", // 🔹 Fun or humorous Pokémon Sleep content
+    "Guides", // 🔹 Step-by-step tutorials and walkthroughs
+    "Feedback", // 🔹 Suggestions and feedback for improving the app
+    "Updates", // 🔹 News and patch discussions
+  ];
 
   // ✅ Load Profanity List on Mount
   useEffect(() => {
