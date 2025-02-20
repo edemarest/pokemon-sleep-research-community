@@ -89,10 +89,11 @@ const EntriesPage = () => {
               <button
                 key={tag}
                 onClick={() => setFilterTag(tag === "All" ? null : tag)}
-                className={`px-4 py-2 rounded-lg text-sm font-bold ${filterTag === tag || (tag === "All" && !filterTag)
+                className={`px-4 py-2 rounded-lg text-sm font-bold ${
+                  filterTag === tag || (tag === "All" && !filterTag)
                     ? "bg-accentGreen text-white"
                     : "bg-[#dbd4c1] text-textDark"
-                  }`}
+                }`}
               >
                 {tag}
               </button>

@@ -96,8 +96,8 @@ export const getUserProfile = async (userId, currentUser = null) => {
     const profile = {
       trainerName: userData.trainerName || "Unknown Trainer",
       profilePicture: userData.profilePicture || "/images/default-avatar.png",
-      friendCodeVisibility: userData.friendCodeVisibility || "hidden", 
-    };    
+      friendCodeVisibility: userData.friendCodeVisibility || "hidden",
+    };
 
     // ✅ Friend Code & Email Visibility Logic
     if (currentUser && currentUser.uid === userId) {
@@ -138,9 +138,6 @@ export const updateUserProfile = async (uid, updatedData) => {
 
 export const deleteUserProfile = async (uid) => {
   try {
-    console.log(`🗑️ Deleting user profile and all related data for: ${uid}...`);
-
-    // 🔹 Re-authenticate user before deletion
     const user = auth.currentUser;
     if (!user) throw new Error("No authenticated user found.");
 
@@ -158,10 +155,8 @@ export const deleteUserProfile = async (uid) => {
     // 🔹 Finally, delete the user from Firebase Authentication
     await deleteUser(user);
 
-    console.log(`✅ Successfully deleted user account and data: ${uid}`);
     return true;
   } catch (error) {
-    console.error("🔥 Error deleting profile:", error);
     throw new Error("Failed to delete profile. " + error.message);
   }
 };
@@ -169,8 +164,6 @@ export const deleteUserProfile = async (uid) => {
 /** 🔹 Deletes all user data when they delete their account */
 export const deleteUserData = async (uid) => {
   try {
-    console.log(`🗑️ Deleting user data for: ${uid}...`);
-
     // 🔹 1. Delete the user's own entries
     const entriesQuery = query(
       collection(db, "entries"),
@@ -211,8 +204,6 @@ export const deleteUserData = async (uid) => {
 
     // 🔹 4. Delete user document from Firestore
     await deleteDoc(doc(db, "users", uid));
-
-    console.log(`✅ Successfully deleted all data for user: ${uid}`);
     return true;
   } catch (error) {
     console.error("🔥 Error deleting user data:", error);
@@ -525,12 +516,6 @@ export const getResearcherOfTheWeek = async () => {
       }
     }
 
-    console.log(
-      "🔥 Researcher of the week:",
-      topUser,
-      "with contributions:",
-      maxContributions,
-    );
     return topUser
       ? { userId: topUser, contributions: maxContributions }
       : null;
@@ -543,9 +528,6 @@ export const getResearcherOfTheWeek = async () => {
 /** 🔹 Get Researcher of the Week based on past week's contributions */
 export const getResearcherOfTheWeekWithProfile = async () => {
   try {
-    console.log("📡 Fetching Researcher of the Week...");
-
-    // ✅ Get the timestamp for 7 days ago
     const oneWeekAgo = Timestamp.fromDate(
       new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     );
@@ -581,10 +563,6 @@ export const getResearcherOfTheWeekWithProfile = async () => {
       const { authorId } = doc.data();
       contributionCount[authorId] = (contributionCount[authorId] || 0) + 1;
     });
-
-    console.log("📊 Contribution Counts:", contributionCount);
-
-    // ✅ Find the user with the most contributions
     const topResearcherId = Object.keys(contributionCount).reduce((a, b) =>
       contributionCount[a] > contributionCount[b] ? a : b,
     );
@@ -593,8 +571,6 @@ export const getResearcherOfTheWeekWithProfile = async () => {
       console.warn("⚠️ No valid researcher found this week.");
       return null;
     }
-
-    // ✅ Fetch top researcher's profile
     const researcherProfile = await getUserProfile(topResearcherId);
 
     return {
@@ -604,7 +580,6 @@ export const getResearcherOfTheWeekWithProfile = async () => {
       contributions: contributionCount[topResearcherId],
     };
   } catch (error) {
-    console.error("🔥 Error fetching Researcher of the Week:", error);
     return null;
   }
 };

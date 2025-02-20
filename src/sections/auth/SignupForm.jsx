@@ -62,7 +62,16 @@ const SignUpForm = ({ setIsSignup }) => {
           friendCodeVisibility,
         );
       } catch (err) {
-        setError(err.message);
+        let errorMessage = "An unexpected error occurred. Please try again.";
+        if (err.code === "auth/invalid-email") {
+          errorMessage = "Invalid email format. Please enter a valid email.";
+        } else if (err.code === "auth/weak-password") {
+          errorMessage =
+            "Password is too weak. Please use a stronger password.";
+        } else {
+          errorMessage = err.message;
+        }
+        setError(errorMessage);
       }
     } else {
       setSignupStep(2);
@@ -71,13 +80,11 @@ const SignUpForm = ({ setIsSignup }) => {
     setLoading(false);
   };
 
-  // **Check if Step 1 fields are filled**
   const isStep1Valid =
     email.trim() !== "" &&
     password.trim() !== "" &&
     confirmPassword.trim() !== "";
 
-  // **Check if Step 2 fields are filled**
   const isStep2Valid = username.trim() !== "" && friendCode.trim() !== "";
 
   return (
@@ -122,7 +129,6 @@ const SignUpForm = ({ setIsSignup }) => {
             >
               Continue
             </button>
-            {/* 🔹 "Already have an account?" Switch to Login */}
             <p className="switch-text mt-3" onClick={() => setIsSignup(false)}>
               Already have an account?{" "}
               <span className="underline cursor-pointer">Login</span>
@@ -179,8 +185,6 @@ const SignUpForm = ({ setIsSignup }) => {
                 {loading ? "Processing..." : "Create Account"}
               </button>
             </div>
-
-            {/* 🔹 "Already have an account?" Switch to Login */}
             <p className="switch-text mt-3" onClick={() => setIsSignup(false)}>
               Already have an account?{" "}
               <span className="underline cursor-pointer">Login</span>

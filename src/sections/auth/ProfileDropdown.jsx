@@ -124,9 +124,6 @@ const ProfileDropdown = ({ setProfilePic }) => {
       console.error("⚠️ No file selected.");
       return;
     }
-
-    console.log("📂 Selected File:", file);
-
     try {
       const newProfilePic = await uploadProfilePicture(user.uid, file);
       if (newProfilePic) {

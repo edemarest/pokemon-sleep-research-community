@@ -84,14 +84,6 @@ const EntryForm = () => {
     const userProfile = await getUserProfile(user.uid);
     const trainerName = userProfile?.trainerName || "Unknown Trainer";
 
-    console.log("📜 Saving Entry:", {
-      userId: user.uid,
-      trainerName,
-      text,
-      imageUrl,
-      tags,
-    });
-
     const success = await saveEntry(
       user.uid,
       trainerName,

@@ -129,11 +129,6 @@ const Entry = ({
         currentUser?.photoURL ||
         DEFAULT_PFP;
 
-      console.log("✅ Retrieved currentUser profile for comment:", {
-        trainerName,
-        profilePic,
-      });
-
       const success = await addComment(
         id,
         currentUser.uid,
@@ -171,10 +166,7 @@ const Entry = ({
 
     const success = await deleteEntry(id, currentUser.uid, imageUrl);
     if (success) {
-      console.log(`🗑️ Successfully deleted entry: ${id}`);
       onDeleteEntry(id); // ✅ Update state in parent
-    } else {
-      console.error("🔥 Failed to delete entry.");
     }
   };
 

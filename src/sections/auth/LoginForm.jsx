@@ -18,7 +18,19 @@ const LoginForm = ({ setIsSignup }) => {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err.message);
+      switch (err.code) {
+        case "auth/invalid-credential":
+          setError("Incorrect email address or password.");
+          break;
+        case "auth/user-disabled":
+          setError("This user has been disabled.");
+          break;
+        case "auth/user-not-found":
+          setError("No user found with this email.");
+          break;
+        default:
+          setError("An error occurred. Please try again.");
+      }
     }
 
     setLoading(false);
