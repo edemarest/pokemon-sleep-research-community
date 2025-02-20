@@ -14,17 +14,17 @@ const ResearchEntries = () => {
 
   useEffect(() => {
     const fetchEntriesWithProfiles = async () => {
-      const fetchedEntries = await getEntries(6); // ✅ Fetch top 6 entries
+      const fetchedEntries = await getEntries(6);
       const entriesWithProfilePics = await Promise.all(
         fetchedEntries.map(async (entry) => {
           const userProfile = await getUserProfile(entry.authorId);
           return {
             ...entry,
-            trainerName: userProfile?.trainerName || "Unknown Trainer", // ✅ Ensure trainerName is always valid
+            trainerName: userProfile?.trainerName || "Unknown Trainer",
             profilePicture:
               userProfile?.profilePicture || "/images/default-avatar.png",
           };
-        }),
+        })
       );
 
       setEntries(entriesWithProfilePics);
@@ -36,7 +36,7 @@ const ResearchEntries = () => {
   // ✅ Delete handler to remove the entry from state
   const handleDeleteEntry = (deletedId) => {
     setEntries((prevEntries) =>
-      prevEntries.filter((entry) => entry.id !== deletedId),
+      prevEntries.filter((entry) => entry.id !== deletedId)
     );
   };
 
@@ -46,19 +46,17 @@ const ResearchEntries = () => {
 
   return (
     <section className="research-entries">
-      {/* ✅ Header + Buttons (Always Visible) */}
-      <div className="flex justify-between items-center mb-3">
+      {/* ✅ Header + Buttons */}
+      <div className="entries-header">
         <h2 className="text-title">Recent Entries</h2>
 
-        <div className="flex justify-center items-center gap-3">
+        {/* ✅ Buttons - Adjust Layout Based on Screen Size */}
+        <div className={`entries-buttons ${user ? "user-logged-in" : "guest"}`}>
           <Link to="/entries" className="btn-primary inline-block">
             See All Entries
           </Link>
           {user && (
-            <Link
-              to="/create-entry"
-              className="flex btn-secondary items-center"
-            >
+            <Link to="/create-entry" className="flex btn-secondary items-center">
               <FaPencilAlt className="mr-2" />
               Log Entry
             </Link>
@@ -66,8 +64,9 @@ const ResearchEntries = () => {
         </div>
       </div>
 
+      {/* ✅ Show message when not logged in */}
       {!user && (
-        <p className="text-body text-left text-textDark mt-2">
+        <p className="text-body text-textDark sign-in-message">
           Sign in to make an entry!
         </p>
       )}
@@ -75,7 +74,7 @@ const ResearchEntries = () => {
       {/* ✅ Scrollable Container for Entries */}
       <div className="entries-container">
         {entries.length > 0 ? (
-          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 2, 768: 2 }}>
+          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 768: 2 }}>
             <Masonry gutter="16px">
               {entries.map((entry) => (
                 <div
@@ -94,7 +93,7 @@ const ResearchEntries = () => {
             </Masonry>
           </ResponsiveMasonry>
         ) : (
-          <p className="text-small text-gray-500">No research entries yet.</p>
+          <p className="text-small text-textDark">No research entries yet.</p>
         )}
       </div>
     </section>

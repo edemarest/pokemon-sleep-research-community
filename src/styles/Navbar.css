@@ -1,4 +1,4 @@
-/* Navbar Container */
+/* 🔹 Navbar Container */
 .navbar {
   width: 100%;
   background-color: theme("colors.card");
@@ -15,8 +15,51 @@
   height: 75px;
 }
 
-/* Navigation Links */
+/* 🔹 Navigation Links (Desktop) */
 .nav-links {
   display: flex;
   gap: 24px;
+}
+
+/* 🔹 Mobile Menu (Hidden by Default on Desktop) */
+.mobile-menu {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ✅ Mobile Styles */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 16px 20px;
+  }
+
+  /* ✅ Show Hamburger Menu on Mobile */
+  .mobile-menu {
+    display: block;
+    color: theme("colors.textDark");
+  }
+
+  /* ✅ Hide Navigation Links by Default on Mobile */
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 75px;
+    left: 0;
+    width: 100%;
+    background-color: theme("colors.card");
+    padding: 16px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ✅ Show Navigation Links When Menu is Open */
+  .nav-links.open {
+    display: flex;
+  }
+
+  /* ✅ Adjust Auth Section for Mobile */
+  .auth-section {
+    margin-left: auto;
+  }
 }

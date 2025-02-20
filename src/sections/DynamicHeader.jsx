@@ -21,16 +21,15 @@ const DynamicHeader = () => {
             : `linear-gradient(to bottom, rgba(163, 217, 165, 0.8), rgba(163, 217, 165, 0.4)), url('/images/header_image.png')`,
         }}
         style={{
-          backgroundSize: "100% auto",
+          backgroundSize: "cover", // Ensures full image visibility
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "center top",
+          backgroundPosition: "center center", // Centers background image
+          overflow: "hidden", // Prevents cut-off issues
         }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >
-        <div>
-          <h1 className="header-title mt-16">
-            Pokémon Sleep Research Community
-          </h1>
+        <div className="header-content">
+          <h1 className="header-title">Pokémon Sleep Research Community</h1>
         </div>
       </motion.header>
       <div className="header-border"></div>

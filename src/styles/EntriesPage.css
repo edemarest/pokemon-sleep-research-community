@@ -1,0 +1,63 @@
+/* 🔹 Scrollable Tag Container */
+.tag-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 2px 0;
+    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+  }
+  
+  /* ✅ Hide scrollbar for Webkit browsers */
+  .tag-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* 🔹 Scrollable Inner Container */
+  .tag-scroll {
+    display: flex;
+    gap: 10px;
+    white-space: nowrap;
+    padding: 5px 10px;
+  }
+  
+  /* 🔹 Tag Buttons */
+  .tag-button {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #dbd4c1;
+    color: #5a4b3c;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0; /* Prevents shrinking */
+    display: inline-flex; /* Ensures correct spacing */
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* 🔹 Active Tag */
+  .active-tag {
+    background-color: #8fcc91;
+    color: white;
+  }
+  
+  /* ✅ Mobile Fixes */
+  @media (max-width: 768px) {
+    .tag-container {
+      justify-content: flex-start;
+    }
+  
+    .tag-scroll {
+      padding: 8px 0 10px 5%;
+    }
+  
+    .tag-button {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+  }
+  

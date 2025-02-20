@@ -7,6 +7,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { FaPencilAlt } from "react-icons/fa";
 import Footer from "../sections/Footer";
 import "../styles/HomePage.css";
+import "../styles/EntriesPage.css";
 import DynamicHeader from "../sections/DynamicHeader";
 import tagsData from "../data/tags.json";
 
@@ -64,9 +65,8 @@ const EntriesPage = () => {
       <div className="main-content">
         {/* ✅ Lighter Container for Title & Tags */}
         <div className="w-full p-6 bg-[#ede3d5]">
-          {/* ✅ Title + Log Entry Button */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-title">Research Log</h2>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+            <h2 className="text-title mb-2 md:mb-0">Research Log</h2>
 
             {user ? (
               <Link
@@ -84,27 +84,25 @@ const EntriesPage = () => {
           </div>
 
           {/* ✅ Tag Filters */}
-          <div className="flex gap-2">
-            {availableTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setFilterTag(tag === "All" ? null : tag)}
-                className={`px-4 py-2 rounded-lg text-sm font-bold ${
-                  filterTag === tag || (tag === "All" && !filterTag)
-                    ? "bg-accentGreen text-white"
-                    : "bg-[#dbd4c1] text-textDark"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+          <div className="tag-container">
+            <div className="tag-scroll">
+              {availableTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setFilterTag(tag === "All" ? null : tag)}
+                  className={`tag-button ${filterTag === tag || (tag === "All" && !filterTag) ? "active-tag" : ""}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* ✅ Entries Container - Full Width */}
         <div className="max-w-8xl mx-auto px-6 mt-6">
           <ResponsiveMasonry
-            columnsCountBreakPoints={{ 350: 2, 750: 3, 1024: 4 }}
+            columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3 }}
           >
             <Masonry gutter="16px">
               {entries.map((entry) => (

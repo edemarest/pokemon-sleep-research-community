@@ -1,37 +1,66 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Research Entries Container */
+/* 🔹 Research Entries Container */
 .research-entries {
   @apply w-full max-w-5xl p-6 bg-card rounded-lg;
-  height: calc(100vh - 250px); /* Adjust height dynamically */
+  height: calc(100vh - 250px);
   display: flex;
   flex-direction: column;
 }
 
-/* Scrollable Entries List */
-.research-entries .entries-container {
-  @apply rounded-md mt-4 p-2 overflow-y-auto shadow-inner bg-[#ede8da];
-  flex-grow: 1; /* Makes it fill remaining space */
-  min-height: 0; /* Prevents flex overflow issues */
+/* 🔹 Entries Header */
+.entries-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-/* ✅ Green Scrollbar */
-.research-entries .entries-container::-webkit-scrollbar {
-  width: 8px;
+/* 🔹 Buttons Section */
+.entries-buttons {
+  display: flex;
+  gap: 12px;
 }
 
-.research-entries .entries-container::-webkit-scrollbar-thumb {
-  background-color: #8fcc91;
-  border-radius: 4px;
+/* ✅ Adjust buttons for mobile */
+@media (max-width: 768px) {
+  .entries-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .entries-buttons {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
 }
 
-.research-entries .entries-container::-webkit-scrollbar-track {
-  background-color: #e3dccb;
+/* 🔹 Ensure "Sign in to make an entry!" is centered on mobile */
+.sign-in-message {
+  text-align: left;
+  margin-bottom: 10px;
 }
 
-.research-entries .entries-container {
-  scrollbar-color: #8fcc91 #e3dccb;
-  scrollbar-width: thin;
+/* ✅ Ensure entry cards don't overflow */
+.entries-container {
+  max-width: 100%;
+  overflow: hidden; /* Prevents content from overflowing */
+}
+
+/* ✅ Prevents entries from extending past the main container */
+.entries-container .masonry {
+  width: 100% !important; /* Ensures masonry layout doesn't expand beyond container */
+}
+
+/* ✅ Adjustments for mobile */
+@media (max-width: 768px) {
+  .sign-in-message {
+    text-align: center;
+    width: 100%;
+    display: block;
+  }
+
+  .entries-container {
+    overflow-x: hidden; /* Ensures no horizontal scroll */
+  }
 }
