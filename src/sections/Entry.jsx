@@ -86,21 +86,23 @@ const Entry = ({
   }, [isExpanded, id]);
 
   const handleLike = async (e) => {
-    e.stopPropagation();
-
+    e.stopPropagation(); 
+  
     if (!currentUser) {
       setLikeError("You must be logged in to like an entry!");
       return;
     }
-
+  
     setLikeError("");
-
+  
     const success = await toggleLike(id, currentUser.uid);
     if (success) {
-      setLiked(!liked);
-      setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+      setLiked((prevLiked) => !prevLiked);
+      setLikeCount((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
+    } else {
+      console.error("🔥 Error toggling like!");
     }
-  };
+  };  
 
   const handleAddComment = async (e) => {
     e.stopPropagation();
