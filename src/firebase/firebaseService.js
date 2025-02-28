@@ -348,25 +348,33 @@ export const uploadEntryImage = async (userId, file) => {
 };
 
 export const toggleLike = async (entryId, userId) => {
+  const entryRef = db.collection("entries").doc(entryId);
+  const entrySnapshot = await entryRef.get();
+
+  if (!entrySnapshot.exists) {
+    console.error("🔥 Entry does not exist:", entryId);
+    return false;
+  }
+
+  const entryData = entrySnapshot.data();
+  const likesArray = entryData.likes || [];
+
+  let updatedLikes;
+  if (likesArray.includes(userId)) {
+    // Unlike the post
+    updatedLikes = likesArray.filter((id) => id !== userId);
+  } else {
+    // Like the post
+    updatedLikes = [...likesArray, userId];
+  }
+
+  console.log("🚀 Updating likes array:", updatedLikes); // Log the update payload
+
   try {
-    const entryRef = doc(db, "entries", entryId);
-    const entrySnapshot = await getDoc(entryRef);
-
-    if (!entrySnapshot.exists()) {
-      return false;
-    }
-
-    const entryData = entrySnapshot.data();
-    const isLiked = entryData.likes.includes(userId);
-
-    await updateDoc(entryRef, {
-      likes: isLiked
-        ? arrayRemove(userId) // Remove like
-        : arrayUnion(userId), // Add like
-    });
-
+    await entryRef.update({ likes: updatedLikes });
     return true;
   } catch (error) {
+    console.error("🔥 Firestore update error:", error);
     return false;
   }
 };
